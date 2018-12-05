@@ -3,3 +3,4 @@
 cni:
   version: 0.6.0
   plugins: 0.7.4
+  bridge_network: "10.10.0.0/16"
