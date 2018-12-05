@@ -1,0 +1,66 @@
+---
+
+- name: Check if configuration for kubeadm exist
+  stat:
+    path: /etc/kubeadm.yml
+  register: kubeadm_yml
+
+- name: Create default configuration for kubeadm
+  shell: "kubeadm config print init-defaults > /etc/kubeadm.yml"
+  become: yes
+  when: not kubeadm_yml.stat.exists
+
+- name: Patch kubeadm configuration
+  patch:
+    src: kubeadm.yml.patch
+    dest: /etc/kubeadm.yml
+  become: yes
+
+- name: Substitute advertise address
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: "advertiseAddress: 1.2.3.4"
+    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
+  become: yes
+
+- name: Generate bootstrap token
+  command: "kubeadm token generate"
+  register: bootstrap_token
+  become: yes
+
+- name: Substitute bootstrap token
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: "token: abcdef.0123456789abcdef"
+    replace: "token: {{ bootstrap_token.stdout_lines.0 }}"
+  become: yes
+
+- name: Check for containerd runtime
+  stat:
+    path: /var/run/containerd/containerd.sock
+  register: containerd_sock
+  become: yes
+
+- name: Set runtime containerd
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: "criSocket: /var/run/dockershim.sock"
+    replace: "criSocket: /var/run/containerd/containerd.sock"
+  when: containerd_sock.stat.issock
+
+- name: Check for running cluster
+  command: "kubectl --kubeconfig /etc/kubernetes/admin.conf version"
+  become: yes
+  register: kubectl_version
+
+- name: Bootstrap master
+  command: "kubeadm init --config /etc/kubeadm.yml"
+  become: yes
+  when: kubectl_version.failed
+
+- name: Fetch kubeconfig
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: cluster/
+    flat: yes
+  become: yes

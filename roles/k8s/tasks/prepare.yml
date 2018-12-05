@@ -1,0 +1,27 @@
+---
+
+- name: Setting sysctl
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+  become: yes
+
+- name: Setting sysctl
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+  become: yes
+
+- name: Install prerequisites
+  apt:
+    name: "{{ k8s.prerequisites }}"
+  become: yes
+
+- name: Get swap configuration
+  shell: "swapon --noheadings | cut -d' ' -f1"
+  register: swap
+
+- name: Disable swap
+  shell: "swapoff {{ swap.stdout_lines.0 }}"
+  when: swap.stdout_lines | length > 0
+  become: yes

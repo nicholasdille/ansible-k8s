@@ -7,3 +7,9 @@
 
 - include: containerd.yml
   when: runtime is defined and runtime == 'containerd'
+
+- include: prepare.yml
+  when: components is defined and 'single_node' in components
+
+- include: single_node.yml
+  when: components is defined and 'single_node' in components
