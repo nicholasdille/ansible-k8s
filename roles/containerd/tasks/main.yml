@@ -2,16 +2,9 @@
 
 - name: Install prerequisites
   apt:
-    name: "{{ item }}"
+    name: "{{ containerd.prerequisites }}"
     update_cache: yes
-  with_items:
-    - unzip
-    - tar
-    - apt-transport-https
-    - btrfs-tools
-    - libseccomp2
-    - socat
-    - util-linux
+  become: yes
 
 - name: Fetch GitHub release
   uri:

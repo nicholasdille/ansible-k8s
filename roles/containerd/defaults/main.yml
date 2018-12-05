@@ -1,3 +1,13 @@
 ---
 
 containerd:
+  # Set to install a specific version
+  #version:
+  prerequisites:
+    - unzip
+    - tar
+    - apt-transport-https
+    - btrfs-tools
+    - libseccomp2
+    - socat
+    - util-linux

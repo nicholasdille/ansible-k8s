@@ -5,8 +5,6 @@
     url: "https://api.github.com/repos/opencontainers/runc/releases/latest"
   register: release
 
-- debug: var=release.json
-
 - name: Install runc
   get_url:
     url: "https://github.com/opencontainers/runc/releases/download/{{ runc.version | default(release.json.tag_name) }}/runc.amd64"
