@@ -1,5 +1,8 @@
-# Test locally
+# ansible-k8s-bootstrap
+
+## Prerequisites on nodes
 
 ```bash
-ansible-playbook --connection=local test.yml
+apt-get udpate
+apt-get install python-minimal
 ```

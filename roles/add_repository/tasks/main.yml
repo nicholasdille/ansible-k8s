@@ -1,4 +1,0 @@
----
-
-- name: Distribution specific tasks
-  include: "{{ ansible_os_family | lower }}.yml"

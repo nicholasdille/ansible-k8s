@@ -1,5 +1,4 @@
 ---
 
 runc:
-  # Set to install a specific version
-  #version:
+  version: 1.0.0-rc6

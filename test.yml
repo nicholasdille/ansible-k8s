@@ -1,8 +1,9 @@
 ---
 
 - name: Test
-  hosts:
-    - test
+  hosts: all
   roles: 
   #- role: runc
-  - role: containerd
+  #- role: containerd
+  - role: docker
+    components: [engine]

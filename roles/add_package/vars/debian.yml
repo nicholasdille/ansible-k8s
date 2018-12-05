@@ -1,5 +1,0 @@
----
-
-pkg:
-  apache2_utils: apache2-utils
-  jre: openjdk-8-jre

@@ -1,13 +1,8 @@
 ---
 
-- name: Fetch GitHub release
-  uri:
-    url: "https://api.github.com/repos/opencontainers/runc/releases/latest"
-  register: release
-
 - name: Install runc
   get_url:
-    url: "https://github.com/opencontainers/runc/releases/download/{{ runc.version | default(release.json.tag_name) }}/runc.amd64"
+    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc.version }}/runc.amd64"
     dest: "/usr/local/bin/runc"
     mode: 0755
   become: yes

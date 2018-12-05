@@ -6,16 +6,9 @@
     update_cache: yes
   become: yes
 
-- name: Fetch GitHub release
-  uri:
-    url: "https://api.github.com/repos/opencontainers/runc/releases/latest"
-  register: release
-
-- debug: var=release.json
-
 - name: Install containerd
   unarchive:
-    src: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version | default(release.json.tag_name) }}/containerd-{{ containerd.version | default(release.json.tag_name) }}.linux-amd64.tar.gz"
+    src: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version }}/containerd-{{ containerd.version }}.linux-amd64.tar.gz"
     dest: "/usr/local"
     remote_src: yes
   become: yes

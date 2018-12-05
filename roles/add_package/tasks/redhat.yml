@@ -1,6 +1,0 @@
----
-
-- name: Build distribution specific package name
-  set_fact:
-    name: "{{ name }}-{{ version }}"
-  when: version is defined and version != '*'
