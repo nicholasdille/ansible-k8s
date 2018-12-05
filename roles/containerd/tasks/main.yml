@@ -1,0 +1,44 @@
+---
+
+- name: Install prerequisites
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - unzip
+    - tar
+    - apt-transport-https
+    - btrfs-tools
+    - libseccomp2
+    - socat
+    - util-linux
+
+- name: Fetch GitHub release
+  uri:
+    url: "https://api.github.com/repos/opencontainers/runc/releases/latest"
+  register: release
+
+- debug: var=release.json
+
+- name: Install containerd
+  unarchive:
+    src: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version | default(release.json.tag_name) }}/containerd-{{ containerd.version | default(release.json.tag_name) }}.linux-amd64.tar.gz"
+    dest: "/usr/local"
+    remote_src: yes
+  become: yes
+
+- name: Install service configuration
+  get_url:
+    url: "https://github.com/containerd/containerd/raw/master/containerd.service"
+    dest: "/etc/systemd/system/containerd.service"
+  become: yes
+
+- name: Create default configuration
+  command: containerd config default > /etc/containerd/config.toml
+
+- name: Configure service
+  systemd:
+    name: containerd
+    enabled: yes
+    state: started
+    daemon_reload: yes

@@ -1,0 +1,13 @@
+---
+
+- name: Test GitHub API
+  uri:
+    url: "{{ github.api_base_url }}/docker/machine/releases/latest"
+  register: release
+
+- name: Install Docker Machine
+  get_url:
+    url: "{{ github.base_url}}/docker/machine/releases/download/{{ docker.machine.version | default(release.json.name) }}/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "/usr/local/bin/docker-machine"
+    mode: 0755
+  become: yes

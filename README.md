@@ -1,1 +1,5 @@
-# ansible-k8s-bootstrap
+# Test locally
+
+```bash
+ansible-playbook --connection=local test.yml
+```

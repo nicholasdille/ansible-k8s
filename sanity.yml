@@ -1,0 +1,30 @@
+---
+
+- name: Check Ansible setup
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+  - name: Update Ansible roles
+    command: ansible-galaxy install -r requirements.yml -p ./galaxy
+    changed_when: false
+
+  - name: Check for native installation
+    stat:
+      path: /etc/ansible/ansible.cfg
+    register: cfg
+
+  - name: Ensure short control path
+    when: cfg.stat.exists
+    lineinfile:
+      dest: /etc/ansible/ansible.cfg
+      regexp: "^control_path = "
+      line: "control_path = %(directory)s/%%h-%%r"
+
+  - name: Ensure hashes are merged
+    when: cfg.stat.exists
+    lineinfile:
+      dest: /etc/ansible/ansible.cfg
+      regexp: "^hash_behaviour = "
+      line: "hash_behaviour = merge"

@@ -1,0 +1,5 @@
+---
+
+- name: Build distribution specific package name
+  set_fact:
+    name: "{{ name }}={{ version }}"

@@ -1,0 +1,17 @@
+---
+
+github:
+  base_url: https://github.com
+  api_base_url: https://api.github.com/repos
+
+docker:
+  apt:
+    repo_url: https://apt.dockerproject.org/repo
+    key_server: hkp://p80.pool.sks-keyservers.net:80
+    key_id: 58118E89F3A912897C070ADBF76221572C52609D
+  yum:
+    repo_url: https://yum.dockerproject.org/repo/main/centos/7/
+    key_url: https://yum.dockerproject.org/gpg
+  engine:
+  compose:
+  machine:

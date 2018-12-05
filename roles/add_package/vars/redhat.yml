@@ -1,0 +1,5 @@
+---
+
+pkg:
+  apache2_utils: httpd-tools
+  jre: java-1.8.0-openjdk

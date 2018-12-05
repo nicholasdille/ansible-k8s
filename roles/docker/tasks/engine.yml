@@ -1,0 +1,25 @@
+---
+
+- name: Install prerequisites
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - software-properties-common
+
+- name: Add Docker apt key
+  apt_key:
+    url: 'https://download.docker.com/linux/ubuntu/gpg'
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable'
+    filename: docker
+
+- name: install docker-ce
+  apt:
+    name: docker-ce
+    update_cache: yes

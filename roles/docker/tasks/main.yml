@@ -1,0 +1,10 @@
+---
+
+- include: engine.yml
+  when: components is defined and 'engine' in components
+  
+- include: compose.yml
+  when: components is defined and 'compose' in components
+  
+- include: machine.yml
+  when: components is defined and 'machine' in components
