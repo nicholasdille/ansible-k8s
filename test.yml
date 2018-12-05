@@ -3,4 +3,7 @@
 - name: Test
   hosts: all
   roles: 
-  - role: containerd
+  #- role: containerd
+  - role: k8s
+    components: tools
+    runtime: containerd

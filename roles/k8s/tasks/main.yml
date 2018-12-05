@@ -1,0 +1,9 @@
+---
+
+- debug: var=k8s.version
+
+- include: tools.yml
+  when: components is defined and 'tools' in components
+
+- include: containerd.yml
+  when: runtime is defined and runtime == 'containerd'

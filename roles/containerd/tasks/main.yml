@@ -11,6 +11,8 @@
     src: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version }}/containerd-{{ containerd.version }}.linux-amd64.tar.gz"
     dest: "/usr/local"
     remote_src: yes
+    owner: root
+    group: root
   become: yes
 
 - name: Install service configuration
