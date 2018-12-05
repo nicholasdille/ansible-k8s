@@ -1,14 +1,8 @@
 ---
 
-- name: Check if configuration for kubeadm exist
-  stat:
-    path: /etc/kubeadm.yml
-  register: kubeadm_yml
-
 - name: Create default configuration for kubeadm
   shell: "kubeadm config print init-defaults > /etc/kubeadm.yml"
   become: yes
-  when: not kubeadm_yml.stat.exists
 
 - name: Patch kubeadm configuration
   patch:
@@ -78,3 +72,38 @@
     dest: cluster/
     flat: yes
   become: yes
+
+- name: Fetch join command for workers
+  command: "kubeadm token create --print-join-command"
+  become: yes
+  register: join_command
+
+- name: Store join command for workers
+  copy:
+    dest: cluster/join_command.txt
+    content: "{{ join_command.stdout_lines.0 }}"
+  delegate_to: 127.0.0.1
+
+- name: Fetch controlplane certificates
+  fetch:
+    src: "{{ item }}"
+    dest: cluster/
+    flat: yes
+  become: yes
+  with_items:
+    - /etc/kubernetes/pki/ca.crt
+    - /etc/kubernetes/pki/ca.key
+    - /etc/kubernetes/pki/sa.key
+    - /etc/kubernetes/pki/sa.pub
+    - /etc/kubernetes/pki/front-proxy-ca.crt
+    - /etc/kubernetes/pki/front-proxy-ca.key
+
+- name: Fetch etcd certificates
+  fetch:
+    src: "{{ item }}"
+    dest: cluster/etcd/
+    flat: yes
+  become: yes
+  with_items:
+    - /etc/kubernetes/pki/etcd/ca.crt
+    - /etc/kubernetes/pki/etcd/ca.key
