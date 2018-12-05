@@ -35,6 +35,13 @@
     replace: "token: {{ bootstrap_token.stdout_lines.0 }}"
   become: yes
 
+- name: Substitute pod network
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: 'podSubnet: "10.32.0.0/12"'
+    replace: 'podSubnet: "{{ k8s.network }}"'
+  become: yes
+
 - name: Check for containerd runtime
   stat:
     path: /var/run/containerd/containerd.sock

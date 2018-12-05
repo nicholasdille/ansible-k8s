@@ -9,3 +9,4 @@ k8s:
     - socat
     - ipvsadm
     - ipset
+  network: "192.168.0.0/16"
