@@ -3,7 +3,4 @@
 - name: Test
   hosts: all
   roles: 
-  - role: runc
   - role: containerd
-  - role: docker
-    components: [engine]
