@@ -4,5 +4,5 @@
 
 ```bash
 apt-get udpate
-apt-get install python-minimal
+apt-get install python
 ```
