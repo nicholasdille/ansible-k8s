@@ -10,3 +10,4 @@ k8s:
     - ipvsadm
     - ipset
   network: "192.168.0.0/16"
+  loadbalancer: "k8s.dille.io"
