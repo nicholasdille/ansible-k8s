@@ -1,5 +1,10 @@
 ---
 
+- name: Create directories for certificates
+  file:
+    path: "/etc/kubernetes/pki/etcd"
+    state: directory
+
 - name: Copy controlplane certificates
   copy:
     src: "cluster/{{ item }}"
@@ -32,6 +37,44 @@
   register: join_command
   delegate_to: 127.0.0.1
 
-- name: Join worker
-  command: "{{ join_command.stdout_lines.0 }} --cri-socket /var/run/containerd/containerd.sock --experimental-control-plane"
+- name: Create default configuration for kubeadm
+  shell: "kubeadm config print join-defaults > /etc/kubeadm.yml"
   become: yes
+
+- name: Substitute advertise address
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: "advertiseAddress: 1.2.3.4"
+    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
+  become: yes
+
+- name: Substitute pod network
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: 'podSubnet: "10.32.0.0/12"'
+    replace: 'podSubnet: "{{ k8s.network }}"'
+  become: yes
+
+- name: Check for containerd runtime
+  stat:
+    path: /var/run/containerd/containerd.sock
+  register: containerd_sock
+  become: yes
+
+- name: Set runtime containerd
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: "criSocket: /var/run/dockershim.sock"
+    replace: "criSocket: /var/run/containerd/containerd.sock"
+  when: containerd_sock.stat.issock
+
+#- name: Join controlplane
+#  command: "{{ join_command.stdout_lines.0 }} --config /etc/kubeadm.yml --experimental-control-plane"
+#  become: yes
+#
+#- name: Allow all node ports
+#  replace:
+#    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+#    regexp: "- kube-apiserver"
+#    replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
+#  become: yes

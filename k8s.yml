@@ -11,9 +11,10 @@
 - name: Deploy additional masters
   hosts: controlplane_join
   roles:
-    - role: containerd
+    #- role: containerd
     - role: k8s
-      components: [tools, controlplane]
+      #components: [tools, controlplane]
+      components: [controlplane]
       runtime: containerd
 
 #- name: Deploy workers

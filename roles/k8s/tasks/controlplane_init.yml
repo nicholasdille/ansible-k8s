@@ -49,6 +49,12 @@
     replace: "criSocket: /var/run/containerd/containerd.sock"
   when: containerd_sock.stat.issock
 
+- name: Set control plane endpoint
+  replace:
+    path: /etc/kubeadm.yml
+    regexp: 'controlPlaneEndpoint: ""'
+    replace: 'controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}"'
+
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubeadm.yml"
   become: yes
