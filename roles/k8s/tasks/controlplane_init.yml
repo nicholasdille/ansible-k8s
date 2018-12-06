@@ -49,15 +49,9 @@
     replace: "criSocket: /var/run/containerd/containerd.sock"
   when: containerd_sock.stat.issock
 
-- name: Check for running cluster
-  command: "kubectl --kubeconfig /etc/kubernetes/admin.conf version"
-  become: yes
-  register: kubectl_version
-
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubeadm.yml"
   become: yes
-  when: kubectl_version.failed
 
 - name: Allow all node ports
   replace:

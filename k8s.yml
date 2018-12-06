@@ -1,0 +1,25 @@
+---
+
+#- name: Initialize cluster
+#  hosts: controlplane_init
+#  roles: 
+#  - role: containerd
+#  - role: k8s
+#    components: [tools, controlplane_init]
+#    runtime: containerd
+
+- name: Deploy additional masters
+  hosts: controlplane_join
+  roles:
+    - role: containerd
+    - role: k8s
+      components: [tools, controlplane]
+      runtime: containerd
+
+#- name: Deploy workers
+#  hosts: worker
+#  roles:
+#    - role: containerd
+#    - role: k8s
+#      components: [tools, worker]
+#      runtime: containerd

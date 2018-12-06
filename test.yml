@@ -1,9 +1,0 @@
----
-
-- name: Test
-  hosts: all
-  roles: 
-  - role: containerd
-  - role: k8s
-    components: [tools, single_node]
-    runtime: containerd

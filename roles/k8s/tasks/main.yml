@@ -9,7 +9,13 @@
   when: runtime is defined and runtime == 'containerd'
 
 - include: prepare.yml
-  when: components is defined and 'single_node' in components
+  when: components is defined and ( 'controlplane_init' in components or 'controlplane' in components or 'worker' in components )
 
-- include: single_node.yml
-  when: components is defined and 'single_node' in components
+- include: controlplane_init.yml
+  when: components is defined and 'controlplane_init' in components
+
+- include: controlplane.yml
+  when: components is defined and 'controlplane' in components
+
+- include: worker.yml
+  when: components is defined and 'worker' in components

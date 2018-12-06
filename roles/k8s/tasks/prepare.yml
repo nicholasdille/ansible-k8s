@@ -1,20 +1,32 @@
 ---
 
+- name: Install prerequisites
+  apt:
+    name: "{{ k8s.prerequisites }}"
+  become: yes
+
+- name: Load modules
+  modprobe:
+    name: "{{ item }}"
+  with_items:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - nf_conntrack_ipv4
+    - br_netfilter
+
 - name: Setting sysctl
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
     value: 1
+    sysctl_set: yes
   become: yes
 
 - name: Setting sysctl
   sysctl:
     name: net.ipv4.ip_forward
     value: 1
-  become: yes
-
-- name: Install prerequisites
-  apt:
-    name: "{{ k8s.prerequisites }}"
   become: yes
 
 - name: Get swap configuration

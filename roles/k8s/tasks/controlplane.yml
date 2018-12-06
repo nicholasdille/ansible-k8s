@@ -1,0 +1,37 @@
+---
+
+- name: Copy controlplane certificates
+  copy:
+    src: "cluster/{{ item }}"
+    dest: /etc/kubernetes/pki
+    owner: root
+    group: root
+  become: yes
+  with_items:
+    - admin.conf
+    - ca.crt
+    - ca.key
+    - sa.key
+    - sa.pub
+    - front-proxy-ca.crt
+    - front-proxy-ca.key
+
+- name: Copy etcd certificates
+  copy:
+    src: "cluster/{{ item }}"
+    dest: /etc/kubernetes/pki/etcd
+    owner: root
+    group: root
+  become: yes
+  with_items:
+    - ca.crt
+    - ca.key
+
+- name: Read join command
+  command: "cat cluster/join_command.txt"
+  register: join_command
+  delegate_to: 127.0.0.1
+
+- name: Join worker
+  command: "{{ join_command.stdout_lines.0 }} --cri-socket /var/run/containerd/containerd.sock --experimental-control-plane"
+  become: yes

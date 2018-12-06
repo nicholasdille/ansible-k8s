@@ -1,0 +1,15 @@
+[controlplane_init]
+test
+
+[controlplane_join]
+test2
+
+[controlplane:children]
+controlplane_init
+controlplane_join
+
+[worker]
+
+[k8s:children]
+controlplane
+worker
