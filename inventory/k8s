@@ -1,8 +1,8 @@
 [controlplane_init]
-test
+master1
 
 [controlplane_join]
-test2
+master2
 
 [controlplane:children]
 controlplane_init

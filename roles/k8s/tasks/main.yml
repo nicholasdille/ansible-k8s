@@ -11,11 +11,16 @@
 - include: prepare.yml
   when: components is defined and ( 'controlplane_init' in components or 'controlplane' in components or 'worker' in components )
 
+- name: Check for running control plane
+  shell: "netstat -tulpan | grep LISTEN | grep :::6443"
+  ignore_errors: yes
+  register: port_6443
+
 - include: controlplane_init.yml
-  when: components is defined and 'controlplane_init' in components
+  when: components is defined and 'controlplane_init' in components and port_6443.failed
 
 - include: controlplane.yml
-  when: components is defined and 'controlplane' in components
+  when: components is defined and 'controlplane' in components and port_6443.failed
 
 - include: worker.yml
   when: components is defined and 'worker' in components

@@ -1,5 +1,0 @@
----
-
-ansible_host: 116.202.18.19
-ansible_user: root
-ansible_ssh_private_key_file: /home/dillen/id_rsa_hetzner

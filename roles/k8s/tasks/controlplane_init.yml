@@ -36,24 +36,18 @@
     replace: 'podSubnet: "{{ k8s.network }}"'
   become: yes
 
-- name: Check for containerd runtime
-  stat:
-    path: /var/run/containerd/containerd.sock
-  register: containerd_sock
-  become: yes
-
 - name: Set runtime containerd
   replace:
     path: /etc/kubeadm.yml
     regexp: "criSocket: /var/run/dockershim.sock"
     replace: "criSocket: /var/run/containerd/containerd.sock"
-  when: containerd_sock.stat.issock
+  when: runtime is defined and runtime == 'containerd'
 
 - name: Set control plane endpoint
   replace:
     path: /etc/kubeadm.yml
     regexp: 'controlPlaneEndpoint: ""'
-    replace: 'controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}"'
+    replace: 'controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"'
 
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubeadm.yml"

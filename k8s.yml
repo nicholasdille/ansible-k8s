@@ -1,21 +1,26 @@
 ---
 
-#- name: Initialize cluster
-#  hosts: controlplane_init
-#  roles: 
-#  - role: containerd
-#  - role: k8s
-#    components: [tools, controlplane_init]
-#    runtime: containerd
+- name: Initialize cluster
+  hosts: controlplane_init
+  roles: 
+    - role: docker
+      components: [engine]
+      vars:
+        docker:
+          version: "18.06.*"
+    - role: k8s
+      components: [tools, controlplane_init]
 
 - name: Deploy additional masters
   hosts: controlplane_join
   roles:
-    #- role: containerd
+    - role: docker
+      components: [engine]
+      vars:
+        docker:
+          version: "18.06.*"
     - role: k8s
-      #components: [tools, controlplane]
-      components: [controlplane]
-      runtime: containerd
+      components: [tools, controlplane]
 
 #- name: Deploy workers
 #  hosts: worker

@@ -4,6 +4,7 @@
   apt:
     name: "{{ item }}"
     update_cache: yes
+  become: yes
   with_items:
     - apt-transport-https
     - ca-certificates
@@ -13,13 +14,22 @@
   apt_key:
     url: 'https://download.docker.com/linux/ubuntu/gpg'
     state: present
+  become: yes
 
 - name: Add Docker repository
   apt_repository:
     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
     filename: docker
+  become: yes
+
+- name: Pin engine to specified version
+  template:
+    src: docker-ce
+    dest: /etc/apt/preferences.d/
+  become: yes
 
 - name: install docker-ce
   apt:
     name: docker-ce
     update_cache: yes
+  become: yes
