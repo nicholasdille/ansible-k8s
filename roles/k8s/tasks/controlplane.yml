@@ -68,10 +68,10 @@
     replace: "criSocket: /var/run/containerd/containerd.sock"
   when: containerd_sock.stat.exists and containerd_sock.stat.issock
 
-- name: Join controlplane
+#- name: Join controlplane
   #command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --cri-socket /var/run/containerd/containerd.sock --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
-  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
-  become: yes
+#  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
+#  become: yes
 
 #- name: Allow all node ports
 #  replace:
