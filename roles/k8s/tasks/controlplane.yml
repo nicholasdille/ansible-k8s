@@ -37,36 +37,36 @@
   register: join_command
   delegate_to: 127.0.0.1
 
-- name: Create default configuration for kubeadm
-  shell: "kubeadm config print join-defaults > /etc/kubeadm.yml"
-  become: yes
-
-- name: Substitute advertise address
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: "advertiseAddress: 1.2.3.4"
-    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
-  become: yes
-
-- name: Substitute pod network
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: 'podSubnet: "10.32.0.0/12"'
-    replace: 'podSubnet: "{{ k8s.network }}"'
-  become: yes
-
-- name: Check for containerd runtime
-  stat:
-    path: /var/run/containerd/containerd.sock
-  register: containerd_sock
-  become: yes
-
-- name: Set runtime containerd
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: "criSocket: /var/run/dockershim.sock"
-    replace: "criSocket: /var/run/containerd/containerd.sock"
-  when: containerd_sock.stat.exists and containerd_sock.stat.issock
+#- name: Create default configuration for kubeadm
+#  shell: "kubeadm config print join-defaults > /etc/kubeadm.yml"
+#  become: yes
+#
+#- name: Substitute advertise address
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: "advertiseAddress: 1.2.3.4"
+#    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
+#  become: yes
+#
+#- name: Substitute pod network
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: 'podSubnet: "10.32.0.0/12"'
+#    replace: 'podSubnet: "{{ k8s.network }}"'
+#  become: yes
+#
+#- name: Check for containerd runtime
+#  stat:
+#    path: /var/run/containerd/containerd.sock
+#  register: containerd_sock
+#  become: yes
+#
+#- name: Set runtime containerd
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: "criSocket: /var/run/dockershim.sock"
+#    replace: "criSocket: /var/run/containerd/containerd.sock"
+#  when: containerd_sock.stat.exists and containerd_sock.stat.issock
 
 #- name: Join controlplane
   #command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --cri-socket /var/run/containerd/containerd.sock --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
@@ -79,3 +79,12 @@
 #    regexp: "- kube-apiserver"
 #    replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
 #  become: yes
+
+- name: Add DNS record for new node
+  cloudflare_dns:
+    zone: "{{ k8s.dns_zone }}"
+    record: "{{ k8s.dns_record }}"
+    type: A
+    value: "{{ ansible_default_ipv4.address }}"
+    account_email: "{{ cloudflare.email }}"
+    account_api_token: "{{ cloudflare.token }}"

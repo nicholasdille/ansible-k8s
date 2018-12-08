@@ -1,53 +1,77 @@
 ---
 
-- name: Create default configuration for kubeadm
-  shell: "kubeadm config print init-defaults > /etc/kubeadm.yml"
-  become: yes
-
-- name: Patch kubeadm configuration
-  patch:
-    src: kubeadm.yml.patch
-    dest: /etc/kubeadm.yml
-  become: yes
-
-- name: Substitute advertise address
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: "advertiseAddress: 1.2.3.4"
-    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
-  become: yes
+#- name: Create default configuration for kubeadm
+#  shell: "kubeadm config print init-defaults > /etc/kubeadm.yml"
+#  become: yes
+#
+#- name: Patch kubeadm configuration
+#  patch:
+#    src: kubeadm.yml.patch
+#    dest: /etc/kubeadm.yml
+#  become: yes
+#
+#- name: Substitute advertise address
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: "advertiseAddress: 1.2.3.4"
+#    replace: "advertiseAddress: {{ ansible_default_ipv4.address }}"
+#  become: yes
 
 - name: Generate bootstrap token
   command: "kubeadm token generate"
   register: bootstrap_token
   become: yes
 
-- name: Substitute bootstrap token
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: "token: abcdef.0123456789abcdef"
-    replace: "token: {{ bootstrap_token.stdout_lines.0 }}"
+#- name: Substitute bootstrap token
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: "token: abcdef.0123456789abcdef"
+#    replace: "token: {{ bootstrap_token.stdout_lines.0 }}"
+#  become: yes
+#
+#- name: Substitute pod network
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: 'podSubnet: "10.32.0.0/12"'
+#    replace: 'podSubnet: "{{ k8s.network }}"'
+#  become: yes
+#
+#- name: Set runtime containerd
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: "criSocket: /var/run/dockershim.sock"
+#    replace: "criSocket: /var/run/containerd/containerd.sock"
+#  when: runtime is defined and runtime == 'containerd'
+#
+#- name: Set control plane endpoint
+#  replace:
+#    path: /etc/kubeadm.yml
+#    regexp: 'controlPlaneEndpoint: ""'
+#    replace: 'controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"'
+
+- name: Clear DNS records for load balancer
+  cloudflare_dns:
+    zone: "{{ k8s.dns_zone }}"
+    record: "{{ k8s.dns_record }}"
+    type: A
+    state: absent
+    account_email: "{{ cloudflare.email }}"
+    account_api_token: "{{ cloudflare.token }}"
+
+- name: Create DNS record for first node
+  cloudflare_dns:
+    zone: "{{ k8s.dns_zone }}"
+    record: "{{ k8s.dns_record }}"
+    type: A
+    value: "{{ ansible_default_ipv4.address }}"
+    account_email: "{{ cloudflare.email }}"
+    account_api_token: "{{ cloudflare.token }}"
+
+- name: Create configuration for kubeadm
+  template:
+    src: kubeadm.yml
+    dest: /etc/kubeadm.yml
   become: yes
-
-- name: Substitute pod network
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: 'podSubnet: "10.32.0.0/12"'
-    replace: 'podSubnet: "{{ k8s.network }}"'
-  become: yes
-
-- name: Set runtime containerd
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: "criSocket: /var/run/dockershim.sock"
-    replace: "criSocket: /var/run/containerd/containerd.sock"
-  when: runtime is defined and runtime == 'containerd'
-
-- name: Set control plane endpoint
-  replace:
-    path: /etc/kubeadm.yml
-    regexp: 'controlPlaneEndpoint: ""'
-    replace: 'controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"'
 
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubeadm.yml"
@@ -59,6 +83,14 @@
     regexp: "- kube-apiserver"
     replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
   become: yes
+
+- name: Determine version for weave
+  shell: kubectl version | base64 | tr -d '\n'
+  register: weave_version
+
+- name: Initialize networking
+  command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f 'https://cloud.weave.works/k8s/net?k8s-version={{ weave_version.stdout_lines.0 }}'"
+  when: not weave_version.failed
 
 - name: Fetch kubeconfig
   fetch:

@@ -9,5 +9,12 @@ k8s:
     - socat
     - ipvsadm
     - ipset
-  network: "192.168.0.0/16"
-  loadbalancer: "k8s.dille.io"
+  cri_socket: "/var/run/dockershim.sock"
+  pod_network: "192.168.0.0/16"
+  dns_zone: dille.io
+  dns_record: k8s
+  load_balancer: "k8s.dille.io"
+
+cloudflare:
+  email: "{{ lookup('env', 'CLOUDFLARE_EMAIL') }}"
+  token: "{{ lookup('env', 'CLOUDFLARE_TOKEN') }}"
