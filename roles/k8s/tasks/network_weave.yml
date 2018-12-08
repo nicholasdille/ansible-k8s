@@ -1,0 +1,9 @@
+---
+
+- name: Determine version for weave
+  shell: kubectl --kubeconfig /etc/kubernetes/admin.conf version | base64 | tr -d '\n'
+  register: weave_version
+
+- name: Initialize networking
+  command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f 'https://cloud.weave.works/k8s/net?k8s-version={{ weave_version.stdout_lines.0 }}'"
+  when: not weave_version.failed

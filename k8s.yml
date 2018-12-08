@@ -3,24 +3,27 @@
 - name: Initialize cluster
   hosts: controlplane_init
   roles: 
-    - role: docker
-      components: [engine]
-      vars:
-        docker:
-          version: "18.06.*"
+    #- role: docker
+    #  components: [engine]
+    #  vars:
+    #    docker:
+    #      version: "18.06.*"
     - role: k8s
       components: [tools, controlplane_init]
+    #  network: weave
+    #  feature: [all_nodeports]
 
 - name: Deploy additional masters
   hosts: controlplane_join
   roles:
-    - role: docker
-      components: [engine]
-      vars:
-        docker:
-          version: "18.06.*"
+    #- role: docker
+    #  components: [engine]
+    #  vars:
+    #    docker:
+    #      version: "18.06.*"
     - role: k8s
       components: [tools, controlplane]
+      #feature: [all_nodeports]
 
 #- name: Deploy workers
 #  hosts: worker

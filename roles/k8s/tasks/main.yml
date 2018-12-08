@@ -19,8 +19,14 @@
 - include: controlplane_init.yml
   when: components is defined and 'controlplane_init' in components and port_6443.failed
 
+- include: network_weave.yml
+  when: components is defined and 'controlplane_init' in components and port_6443.failed and network is defined and network == 'weave'
+
 - include: controlplane.yml
   when: components is defined and 'controlplane' in components and port_6443.failed
+
+- include: feature_nodeports.yml
+  when: feature is defined and 'all_nodeports' in feature
 
 - include: worker.yml
   when: components is defined and 'worker' in components

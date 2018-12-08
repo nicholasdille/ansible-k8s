@@ -1,0 +1,8 @@
+---
+
+- name: Allow all node ports
+  replace:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+    regexp: "- kube-apiserver"
+    replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
+  become: yes
