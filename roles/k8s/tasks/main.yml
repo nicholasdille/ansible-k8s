@@ -5,7 +5,7 @@
 - include: tools.yml
   when: components is defined and 'tools' in components
 
-- include: containerd.yml
+- include: runtime_containerd.yml
   when: runtime is defined and runtime == 'containerd'
 
 - include: prepare.yml
@@ -27,6 +27,9 @@
 
 - include: feature_nodeports.yml
   when: feature is defined and 'all_nodeports' in feature
+
+- include: feature_untaint.yml
+  when: feature is defined and 'untaint' in feature
 
 - include: worker.yml
   when: components is defined and 'worker' in components

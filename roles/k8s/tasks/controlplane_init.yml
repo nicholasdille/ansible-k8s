@@ -33,13 +33,6 @@
   command: "kubeadm init --config /etc/kubeadm.yml"
   become: yes
 
-- name: Allow all node ports
-  replace:
-    path: /etc/kubernetes/manifests/kube-apiserver.yaml
-    regexp: "- kube-apiserver"
-    replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
-  become: yes
-
 - name: Determine version for weave
   shell: kubectl version | base64 | tr -d '\n'
   register: weave_version

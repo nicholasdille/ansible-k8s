@@ -41,6 +41,7 @@
   #command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --cri-socket /var/run/containerd/containerd.sock --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
 #  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
 #  become: yes
+#  register: cluster_join
 
 - name: Add DNS record for new node
   cloudflare_dns:
@@ -50,3 +51,4 @@
     value: "{{ ansible_default_ipv4.address }}"
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
+  when: cluster_join is defined and not cluster_join.failed
