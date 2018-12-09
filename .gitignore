@@ -2,3 +2,4 @@ id_rsa*
 ssh_known_hosts
 cluster/**
 library/**
+backup/**
