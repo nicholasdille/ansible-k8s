@@ -4,6 +4,8 @@
   file:
     path: "/etc/kubernetes/pki/etcd"
     state: directory
+  tags:
+    - copy
 
 - name: Copy controlplane certificates
   copy:
@@ -20,6 +22,8 @@
     - sa.pub
     - front-proxy-ca.crt
     - front-proxy-ca.key
+  tags:
+    - copy
 
 - name: Copy etcd certificates
   copy:
@@ -31,17 +35,22 @@
   with_items:
     - ca.crt
     - ca.key
+  tags:
+    - copy
 
 - name: Read join command
   command: "cat cluster/join_command.txt"
   register: join_command
   delegate_to: 127.0.0.1
+  tags:
+    - join
 
 - name: Join controlplane
-  #command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --cri-socket /var/run/containerd/containerd.sock --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
-  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane"
+  shell: "{{ join_command.stdout_lines.0 }} --experimental-control-plane"
   become: yes
   register: cluster_join
+  tags:
+    - join
 
 - name: Add DNS record for new node
   cloudflare_dns:
@@ -52,3 +61,5 @@
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
   when: cluster_join is defined and not cluster_join.failed
+  tags:
+    - dns

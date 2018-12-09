@@ -1,10 +1,5 @@
 ---
 
-- name: Generate bootstrap token
-  command: "kubeadm token generate"
-  register: bootstrap_token
-  become: yes
-
 - name: Clear DNS records for load balancer
   cloudflare_dns:
     zone: "{{ k8s.dns_zone }}"
@@ -14,6 +9,8 @@
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
   when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
+  tags:
+    - dns
 
 - name: Create DNS record for first node
   cloudflare_dns:
@@ -24,6 +21,8 @@
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
   when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
+  tags:
+    - dns
 
 - name: Create configuration directory
   file:
@@ -32,24 +31,41 @@
     owner: root
     group: root
   become: yes
+  tags:
+    - config
+
+- name: Generate bootstrap token
+  command: "kubeadm token generate"
+  register: bootstrap_token
+  become: yes
+  tags:
+    - config
 
 - name: Create configuration for kubeadm
   template:
     src: kubeadm-config.yml
     dest: /etc/kubernetes/kubeadm-config.yml
   become: yes
+  tags:
+    - config
 
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml"
   become: yes
+  tags:
+    - bootstrap
 
 - name: Determine version for weave
   shell: kubectl version | base64 | tr -d '\n'
   register: weave_version
+  tags:
+    - network
 
 - name: Initialize networking
   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f 'https://cloud.weave.works/k8s/net?k8s-version={{ weave_version.stdout_lines.0 }}'"
   when: not weave_version.failed
+  tags:
+    - network
 
 - name: Fetch kubeconfig
   fetch:
@@ -57,17 +73,23 @@
     dest: cluster/
     flat: yes
   become: yes
+  tags:
+    - copy
 
 - name: Fetch join command for workers
   command: "kubeadm token create --print-join-command"
   become: yes
   register: join_command
+  tags:
+    - copy
 
 - name: Store join command for workers
   copy:
     dest: cluster/join_command.txt
     content: "{{ join_command.stdout_lines.0 }}"
   delegate_to: 127.0.0.1
+  tags:
+    - copy
 
 - name: Fetch controlplane certificates
   fetch:
@@ -82,6 +104,8 @@
     - /etc/kubernetes/pki/sa.pub
     - /etc/kubernetes/pki/front-proxy-ca.crt
     - /etc/kubernetes/pki/front-proxy-ca.key
+  tags:
+    - copy
 
 - name: Fetch etcd certificates
   fetch:
@@ -92,3 +116,5 @@
   with_items:
     - /etc/kubernetes/pki/etcd/ca.crt
     - /etc/kubernetes/pki/etcd/ca.key
+  tags:
+    - copy
