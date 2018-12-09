@@ -20,7 +20,3 @@ k8s:
   dns_zone: dille.io
   dns_record: k8s
   load_balancer: "k8s.dille.io"
-
-cloudflare:
-  email: "{{ lookup('env', 'CLOUDFLARE_EMAIL') }}"
-  token: "{{ lookup('env', 'CLOUDFLARE_TOKEN') }}"

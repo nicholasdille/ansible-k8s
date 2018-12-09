@@ -13,22 +13,24 @@
   hosts: controlplane_init
   roles: 
     - role: k8s
-      components: [tools, controlplane_init]
-      runtime: docker
-    #  network: weave
+      k8s:
+        components: [tools, controlplane_init]
+        runtime: docker
+        network: weave
 
 - name: Deploy additional masters
   hosts: controlplane_join
   roles:
     - role: k8s
-      components: [tools, controlplane]
-      runtime: docker
+      k8s:
+        components: [tools, controlplane]
+        runtime: docker
 
-- name: Configure control planes
-  hosts: controlplane
-  roles:
-    - role: k8s
-      feature: [all_nodeports]
+#- name: Configure control planes
+#  hosts: controlplane
+#  roles:
+#    - role: k8s
+#      feature: [all_nodeports]
 
 #- name: Deploy workers
 #  hosts: worker

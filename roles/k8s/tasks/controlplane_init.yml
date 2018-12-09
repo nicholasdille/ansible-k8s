@@ -13,6 +13,7 @@
     state: absent
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
+  when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
 
 - name: Create DNS record for first node
   cloudflare_dns:
@@ -22,15 +23,24 @@
     value: "{{ ansible_default_ipv4.address }}"
     account_email: "{{ cloudflare.email }}"
     account_api_token: "{{ cloudflare.token }}"
+  when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
+
+- name: Create configuration directory
+  file:
+    path: /etc/kubernetes
+    state: directory
+    owner: root
+    group: root
+  become: yes
 
 - name: Create configuration for kubeadm
   template:
-    src: kubeadm.yml
-    dest: /etc/kubeadm.yml
+    src: kubeadm-config.yml
+    dest: /etc/kubernetes/kubeadm-config.yml
   become: yes
 
 - name: Bootstrap master
-  command: "kubeadm init --config /etc/kubeadm.yml"
+  command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml"
   become: yes
 
 - name: Determine version for weave

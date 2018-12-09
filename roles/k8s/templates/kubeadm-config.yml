@@ -1,0 +1,9 @@
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: stable
+apiServer:
+  certSANs:
+  - "{{ k8s.load_balancer }}"
+controlPlaneEndpoint: "{{ k8s.load_balancer }}:6443"
+networking:
+  podSubnet: "{{ k8s.pod_network }}"

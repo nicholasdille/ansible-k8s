@@ -1,8 +1,8 @@
 ---
 
 dependencies:
-  - role: containerd
-    when: 'k8s.runtime is defined and k8s.runtime == "containerd"'
+  #- role: containerd
+  #  when: 'k8s.runtime is defined and k8s.runtime == "containerd"'
   - role: docker
     docker:
       components: [engine]

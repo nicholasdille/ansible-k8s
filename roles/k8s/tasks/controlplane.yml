@@ -37,11 +37,11 @@
   register: join_command
   delegate_to: 127.0.0.1
 
-#- name: Join controlplane
+- name: Join controlplane
   #command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --cri-socket /var/run/containerd/containerd.sock --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
-#  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane --apiserver-advertise-address {{ ansible_default_ipv4.address }}"
-#  become: yes
-#  register: cluster_join
+  command: "{{ join_command.stdout_lines.0 }} --experimental-control-plane"
+  become: yes
+  register: cluster_join
 
 - name: Add DNS record for new node
   cloudflare_dns:
