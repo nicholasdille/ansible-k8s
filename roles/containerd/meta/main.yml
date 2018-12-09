@@ -3,3 +3,5 @@
 dependencies:
   - role: runc
   - role: cni
+    components: [plugins]
+    config: [bridge]

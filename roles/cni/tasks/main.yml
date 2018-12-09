@@ -1,32 +1,9 @@
 ---
 
-- name: Create directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - /opt/cni/bin
-    - /etc/cni/net.d
-  become: yes
+- include: binaries.yml
 
-- name: Install CNI
-  unarchive:
-    src: "https://github.com/containernetworking/cni/releases/download/v{{ cni.version }}/cni-amd64-v{{ cni.version }}.tgz"
-    dest: "/opt/cni/bin"
-    remote_src: yes
-  become: yes
+- include: plugins.yml
+  when: components is defined and 'plugins' in components
 
-- name: Install CNI plugins
-  unarchive:
-    src: "https://github.com/containernetworking/plugins/releases/download/v{{ cni.plugins }}/cni-plugins-amd64-v{{ cni.plugins }}.tgz"
-    dest: "/opt/cni/bin"
-    remote_src: yes
-  become: yes
-
-- name: Install CNI plugin configuration
-  template:
-    src: bridge.conf
-    dest: /etc/cni/net.d
-    owner: root
-    group: root
-  become: yes
+- include: bridge.yml
+  when: config is defined and 'bridge' in config
