@@ -1,0 +1,4 @@
+---
+
+- debug: var=test
+  when: test is defined and test.components is defined and 'test' in test.components

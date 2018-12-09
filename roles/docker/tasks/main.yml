@@ -1,10 +1,14 @@
 ---
 
+- debug: msg="BEGIN role docker"
+
 - include: engine.yml
-  when: components is defined and 'engine' in components
+  when: docker.components is defined and 'engine' in docker.components
   
 - include: compose.yml
-  when: components is defined and 'compose' in components
+  when: docker.components is defined and 'compose' in docker.components
   
 - include: machine.yml
-  when: components is defined and 'machine' in components
+  when: docker.components is defined and 'machine' in docker.components
+
+- debug: msg="END role docker"

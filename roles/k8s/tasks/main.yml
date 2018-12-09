@@ -1,15 +1,15 @@
 ---
 
-- debug: var=k8s.version
+- debug: msg="BEGIN Role k8s"
 
 - include: tools.yml
-  when: components is defined and 'tools' in components
+  when: '"tools" in k8s.components'
 
 - include: runtime_containerd.yml
-  when: runtime is defined and runtime == 'containerd'
+  when: 'k8s.runtime == "containerd"'
 
 - include: prepare.yml
-  when: components is defined and ( 'controlplane_init' in components or 'controlplane' in components or 'worker' in components )
+  when: '"controlplane_init" in k8s.components or "controlplane" in k8s.components or "worker" in k8s.components'
 
 - name: Check for running control plane
   shell: "netstat -tulpan | grep LISTEN | grep :::6443"
@@ -17,19 +17,21 @@
   register: port_6443
 
 - include: controlplane_init.yml
-  when: components is defined and 'controlplane_init' in components and port_6443.failed
+  when: '"controlplane_init" in k8s.components and port_6443.failed'
 
 - include: network_weave.yml
-  when: components is defined and 'controlplane_init' in components and port_6443.failed and network is defined and network == 'weave'
+  when: '"controlplane_init" in k8s.components and port_6443.failed and k8s.network == "weave"'
 
 - include: controlplane.yml
-  when: components is defined and 'controlplane' in components and port_6443.failed
+  when: '"controlplane" in k8s.components and port_6443.failed'
 
 - include: feature_nodeports.yml
-  when: feature is defined and 'all_nodeports' in feature
+  when: '"all_nodeports" in k8s.features'
 
 - include: feature_untaint.yml
-  when: feature is defined and 'untaint' in feature
+  when: '"untaint" in k8s.features'
 
 - include: worker.yml
-  when: components is defined and 'worker' in components
+  when: '"worker"in k8s.components'
+
+- debug: msg="END role k8s"

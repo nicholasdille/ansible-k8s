@@ -1,5 +1,7 @@
 ---
 
+- debug: msg="BEGIN role containerd"
+
 - name: Install prerequisites
   apt:
     name: "{{ containerd.prerequisites }}"
@@ -36,3 +38,5 @@
     enabled: yes
     state: started
     daemon_reload: yes
+
+- debug: msg="END role containerd"

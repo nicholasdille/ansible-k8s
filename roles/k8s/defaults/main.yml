@@ -9,6 +9,12 @@ k8s:
     - socat
     - ipvsadm
     - ipset
+  # supported values: tools, controleplane_init, controlplane, worker
+  components: []
+  # supported values: docker, containerd
+  runtime: "docker"
+  # supported values: all_nodeports, untaint
+  features: []
   cri_socket: "/var/run/dockershim.sock"
   pod_network: "192.168.0.0/16"
   dns_zone: dille.io

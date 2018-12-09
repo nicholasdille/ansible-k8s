@@ -1,29 +1,34 @@
 ---
 
+- name: Prepare nodes for Ansible
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Install updates
+      raw: "apt-get update && apt-get -y upgrade"
+    - name: Install Python
+      raw: "apt-get -y install python-pip"
+
 - name: Initialize cluster
   hosts: controlplane_init
   roles: 
-    #- role: docker
-    #  components: [engine]
-    #  vars:
-    #    docker:
-    #      version: "18.06.*"
     - role: k8s
       components: [tools, controlplane_init]
+      runtime: docker
     #  network: weave
-    #  feature: [all_nodeports]
 
 - name: Deploy additional masters
   hosts: controlplane_join
   roles:
-    #- role: docker
-    #  components: [engine]
-    #  vars:
-    #    docker:
-    #      version: "18.06.*"
     - role: k8s
       components: [tools, controlplane]
-      #feature: [all_nodeports]
+      runtime: docker
+
+- name: Configure control planes
+  hosts: controlplane
+  roles:
+    - role: k8s
+      feature: [all_nodeports]
 
 #- name: Deploy workers
 #  hosts: worker

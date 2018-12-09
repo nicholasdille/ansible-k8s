@@ -5,6 +5,9 @@ github:
   api_base_url: https://api.github.com/repos
 
 docker:
+  # supported values: engine, compose, machine
+  components: [engine]
+  version: "*"
   apt:
     repo_url: https://apt.dockerproject.org/repo
     key_server: hkp://p80.pool.sks-keyservers.net:80
