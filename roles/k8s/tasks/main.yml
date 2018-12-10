@@ -17,10 +17,10 @@
   register: port_6443
 
 - include: controlplane_init.yml
-  when: '"controlplane_init" in k8s.components and port_6443.failed'
+  when: '"controlplane_init" in k8s.components and port_6443 is defined and port_6443.failed'
 
 - include: network_weave.yml
-  when: '"controlplane_init" in k8s.components and port_6443.failed and k8s.network == "weave"'
+  when: '"controlplane_init" in k8s.components and port_6443 is defined and port_6443.failed and k8s.network == "weave"'
 
 - include: controlplane.yml
   when: '"controlplane" in k8s.components and port_6443.failed'
