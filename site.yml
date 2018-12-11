@@ -5,10 +5,29 @@
   connection: local
   gather_facts: no
   tasks:
-    - name: Provision workers
+    - name: Provision first master
       hcloud_server:
         name:
           - master1
+        image: ubuntu-18.04
+        server_type: cx21
+        location: fsn1
+        ssh_keys:
+          - 209622
+        token: "{{ hcloud.token }}"
+      register: first_master
+    - name: Create inventory
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.public_ipv4 }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        groups:
+          - contolplane_init
+      with_items: "{{ first_master.servers }}"
+    - name: Provision additional masters
+      hcloud_server:
+        name:
           - master2
         image: ubuntu-18.04
         server_type: cx21
@@ -16,21 +35,51 @@
         ssh_keys:
           - 209622
         token: "{{ hcloud.token }}"
-      register: workers
-    - name: Store workers in inventory
+      register: additional_masters
+    - name: Create inventory
       add_host:
         name: "{{ item.name }}"
         ansible_host: "{{ item.public_ipv4 }}"
         ansible_user: root
         ansible_ssh_private_key_file: "~/id_rsa_hetzner"
         groups:
-          - hcloud
-      with_items: "{{ workers.servers }}"
+          - contolplane_join
+      with_items: "{{ additional_masters.servers }}"
 
-- name: Prepare nodes for Ansible
+- name: Create SSH config
   hosts: all
   gather_facts: no
   tasks:
+    - name: Create SSH config
+      copy:
+        content: |
+          # config for {{ inventory_hostname }}
+          Host {{ inventory_hostname }}
+              HostName {{ ansible_host }}
+              User {{ ansible_user }}
+              IdentityFile {{ ansible_ssh_private_key_file }}
+              StrictHostKeyChecking no
+              UserKnownHostsFile /dev/null
+        dest: "~/.ssh/config.d/{{ inventory_hostname }}"
+      delegate_to: localhost
+    - name: STOP
+      command: "false"
+      
+- name: Wait for nodes to be available
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH
+      wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        connect_timeout: 5
+        timeout: 15
+      delegate_to: localhost
+    - name: Print configuration
+      debug:
+        var: hostvars[inventory_hostname]
+        verbosity: 1
     - name: Install updates
       raw: "apt-get update && apt-get -y upgrade"
     - name: Install Python
