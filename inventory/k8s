@@ -1,8 +1,6 @@
 [controlplane_init]
-master1
 
 [controlplane_join]
-master2
 
 [controlplane:children]
 controlplane_init

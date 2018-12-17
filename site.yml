@@ -9,7 +9,7 @@
       hcloud_server:
         name:
           - master1
-        image: ubuntu-18.04
+        image: ubuntu-16.04
         server_type: cx21
         location: fsn1
         ssh_keys:
@@ -23,13 +23,13 @@
         ansible_user: root
         ansible_ssh_private_key_file: "~/id_rsa_hetzner"
         groups:
-          - contolplane_init
+          - controlplane_init
       with_items: "{{ first_master.servers }}"
     - name: Provision additional masters
       hcloud_server:
         name:
           - master2
-        image: ubuntu-18.04
+        image: ubuntu-16.04
         server_type: cx21
         location: fsn1
         ssh_keys:
@@ -43,7 +43,7 @@
         ansible_user: root
         ansible_ssh_private_key_file: "~/id_rsa_hetzner"
         groups:
-          - contolplane_join
+          - controlplane_join
       with_items: "{{ additional_masters.servers }}"
 
 - name: Create SSH config
@@ -61,9 +61,8 @@
               StrictHostKeyChecking no
               UserKnownHostsFile /dev/null
         dest: "~/.ssh/config.d/{{ inventory_hostname }}"
+        mode: "0640"
       delegate_to: localhost
-    - name: STOP
-      command: "false"
       
 - name: Wait for nodes to be available
   hosts: all
