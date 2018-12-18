@@ -73,7 +73,7 @@
         host: "{{ ansible_host }}"
         port: 22
         connect_timeout: 5
-        timeout: 15
+        timeout: 60
       delegate_to: localhost
     - name: Print configuration
       debug:
