@@ -119,6 +119,9 @@
 - name: Prepare all nodes
   hosts: k8s
   roles:
+    - role: docker
+      docker:
+        version: "18.06.*"
     - role: k8s-node-prepare
 
 - name: Initialize cluster
