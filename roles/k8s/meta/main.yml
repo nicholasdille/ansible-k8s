@@ -9,4 +9,5 @@ dependencies:
       version: "18.06.*"
     when: 'k8s.runtime is defined and k8s.runtime == "docker"'
   - role: cni
-    components: [plugins]
+    cni:
+      components: [plugins]

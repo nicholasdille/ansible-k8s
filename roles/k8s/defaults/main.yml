@@ -9,6 +9,7 @@ k8s:
     - socat
     - ipvsadm
     - ipset
+    - ebtables
   # supported values: tools, controleplane_init, controlplane, worker
   components: []
   # supported values: docker, containerd
