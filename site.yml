@@ -116,25 +116,35 @@
       docker:
         version: "18.06.*"
     - role: k8s-node-prepare
+  tags:
+    - k8s-node-prepare
 
 - name: Initialize cluster
   hosts: cluster_init
   roles:
     - role: k8s-cluster-init
     - role: k8s-cni-weave
+  tags:
+    - k8s-cluster-init
 
 - name: Deploy additional masters
   hosts: cluster_join
   serial: 1
   roles:
     - role: k8s-controller-join
+  tags:
+    - k8s-controller-join
 
 - name: Configure control planes
   hosts: controlplane
   roles:
     - role: k8s-controller-all-nodeports
+  tags:
+    - k8s-controller-all-nodeports
 
 - name: Deploy workers
   hosts: worker
   roles:
     - role: k8s-worker-join
+  tags:
+    - k8s-worker-join
