@@ -1,8 +1,14 @@
 ---
 
+- name: Check for node port range
+  command: grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml
+  ignore_errors: yes
+  register: node_port_range
+
 - name: Allow all node ports
   replace:
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
     regexp: "- kube-apiserver"
     replace: "- kube-apiserver\n    - --service-node-port-range=1-65535"
+  when: node_port_range is defined and node_port_range.failed
   become: yes
