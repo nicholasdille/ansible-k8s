@@ -89,13 +89,6 @@
         mode: "0640"
       delegate_to: localhost
 
-- name: Give VMs some time to start
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - pause:
-      seconds: 30
-
 - name: Wait for nodes to be available
   hosts: k8s
   gather_facts: no
