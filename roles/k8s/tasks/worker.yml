@@ -6,5 +6,5 @@
   delegate_to: 127.0.0.1
 
 - name: Join worker
-  command: "{{ join_command.stdout_lines.0 }} --cri-socket /var/run/containerd/containerd.sock"
+  command: "{{ join_command.stdout_lines.0 }}"
   become: yes
