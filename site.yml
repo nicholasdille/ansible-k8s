@@ -89,11 +89,11 @@
         mode: "0640"
       delegate_to: localhost
 
-- name: Wait for nodes to be available
+- name: Prepare nodes for Ansible
   hosts: k8s
   gather_facts: no
   tasks:
-    - name: Wait for SSH
+    - name: Wait for SSH to be available
       wait_for:
         host: "{{ ansible_host }}"
         port: 22
