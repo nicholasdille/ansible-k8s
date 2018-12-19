@@ -33,3 +33,17 @@
     name: docker-ce
     update_cache: yes
   become: yes
+
+- name: Install daemon configuration
+  copy:
+    src: daemon.json
+    dest: /etc/docker
+    owner: root
+    group: root
+  become: yes
+
+- name: Configure service
+  systemd:
+    name: docker
+    enabled: yes
+    state: restarted
