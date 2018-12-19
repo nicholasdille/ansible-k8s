@@ -1,10 +1,9 @@
 ---
 
-- name: Read join command
-  command: "cat cluster/join_command.txt"
-  register: join_command
-  delegate_to: 127.0.0.1
+- name: Check for running control plane
+  shell: "netstat -tulpan | grep LISTEN | grep :::6443"
+  ignore_errors: yes
+  register: port_6443
 
-- name: Join worker
-  command: "{{ join_command.stdout_lines.0 }}"
-  become: yes
+- include: worker-join.yml
+  when: 'port_6443 is defined and port_6443.failed'
