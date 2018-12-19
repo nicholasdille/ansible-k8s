@@ -6,4 +6,4 @@
   register: kubelet_service_not_present
 
 - include: cluster-init.yml
-  when: 'kubelet_service_not_present is defined and kubelet_service_not_present.failed'
+  when: 'kubelet_service_not_present is defined and not kubelet_service_not_present.failed'
