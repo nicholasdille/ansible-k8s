@@ -106,7 +106,7 @@
         timeout: 60
       delegate_to: localhost
     - name: Install updates
-      raw: "while fuser /var/lib/apt/lists/lock 2>/dev/null | grep /var/lib/apt/lists/lock; do sleep 1; done && apt-get -y upgrade"
+      raw: "while fuser /var/lib/apt/lists/lock 2>/dev/null | grep /var/lib/apt/lists/lock; do sleep 1; done && apt-get update && apt-get -y upgrade"
     - name: Install Python
       raw: "apt-get -y install python-pip"
   tags:
