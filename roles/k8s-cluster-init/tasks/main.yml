@@ -3,9 +3,9 @@
 - name: Check for running control plane
   shell: "systemctl is-active kubelet | grep -v inactive"
   ignore_errors: yes
-  register: kubelet_service_not_present
+  register: kubelet_service_present
 
-- debug: var=kubelet_service_not_present
+- debug: var=kubelet_service_present
 
 - include: cluster-init.yml
-  when: 'kubelet_service_not_present is defined and kubelet_service_not_present.failed'
+  when: 'kubelet_service_present is defined and kubelet_service_present.failed'
