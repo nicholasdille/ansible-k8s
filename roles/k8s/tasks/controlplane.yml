@@ -27,7 +27,7 @@
 
 - name: Copy etcd certificates
   copy:
-    src: "cluster/{{ item }}"
+    src: "cluster/etcd/{{ item }}"
     dest: /etc/kubernetes/pki/etcd
     owner: root
     group: root
