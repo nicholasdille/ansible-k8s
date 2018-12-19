@@ -94,9 +94,8 @@
   gather_facts: no
   tasks:
     - pause:
-      prompt: "Giving VM some time to start"
       seconds: 30
-      
+
 - name: Wait for nodes to be available
   hosts: k8s
   gather_facts: no
@@ -118,41 +117,28 @@
       raw: "apt-get -y install python-pip"
 
 - name: Prepare all nodes
-  hosts: all
-  roles: 
-    - role: k8s
-      k8s:
-        components: [tools]
-        runtime: docker
+  hosts: k8s
+  roles:
+    - role: k8s-node-prepare
 
 - name: Initialize cluster
   hosts: cluster_init
-  roles: 
-    - role: k8s
-      k8s:
-        components: [controlplane_init]
-        runtime: docker
-        network: weave
+  roles:
+    - role: k8s-cluster-init
+    - role: k8s-cni-weave
 
 - name: Deploy additional masters
   hosts: cluster_join
-  strategy: serial
+  serial: 1
   roles:
-    - role: k8s
-      k8s:
-        components: [controlplane]
-        runtime: docker
+    - role: k8s-controller-join
 
 - name: Configure control planes
   hosts: controlplane
   roles:
-    - role: k8s
-      feature: [all_nodeports]
+    - role: k8s-controller-all-nodeports
 
-#- name: Deploy workers
-#  hosts: worker
-#  roles:
-#    - role: k8s
-#      k8s:
-#        components: [worker]
-#        runtime: docker
+- name: Deploy workers
+  hosts: worker
+  roles:
+    - role: k8s-worker-join

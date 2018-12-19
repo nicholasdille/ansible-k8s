@@ -1,0 +1,12 @@
+---
+
+cri:
+  ctl_version: 1.11.1
+
+k8s:
+  version: "{{ lookup('url', 'https://dl.k8s.io/release/stable.txt') }}"
+  prerequisites:
+    - socat
+    - ipvsadm
+    - ipset
+    - ebtables

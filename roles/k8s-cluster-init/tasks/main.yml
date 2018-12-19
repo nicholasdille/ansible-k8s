@@ -55,18 +55,6 @@
   tags:
     - bootstrap
 
-- name: Determine version for weave
-  shell: kubectl version | base64 | tr -d '\n'
-  register: weave_version
-  tags:
-    - network
-
-- name: Initialize networking
-  command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f 'https://cloud.weave.works/k8s/net?k8s-version={{ weave_version.stdout_lines.0 }}'"
-  when: not weave_version.failed
-  tags:
-    - network
-
 - name: Fetch kubeconfig
   fetch:
     src: /etc/kubernetes/admin.conf
