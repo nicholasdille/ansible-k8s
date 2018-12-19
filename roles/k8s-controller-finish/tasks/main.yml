@@ -1,0 +1,12 @@
+---
+
+- name: Generate list of IP addresses and hostnames needed for Kubernetes API server certificate
+  set_fact:
+		k8sHosts: '{% set comma = joiner(",") %}{% for item in groups["controlplane"] -%}{{ comma() }}https://{{ hostvars[item].ansible_default_ipv4.address }}:2379{%- endfor %}'
+	delegate_to: localhost
+
+- name: Patch
+	replace:
+		path: /etc/kubernetes/manifests/kube-apiserver.yaml
+		regexp: "--etcd-servers=.+"
+		replace: "--etcd-servers={{ k8sHosts }}"

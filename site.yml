@@ -141,6 +141,7 @@
 - name: Configure control planes
   hosts: controlplane
   roles:
+    - role: k8s-controller-finish
     - role: k8s-controller-all-nodeports
   tags:
     - k8s-controller-all-nodeports
