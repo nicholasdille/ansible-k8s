@@ -1,10 +1,18 @@
 ---
 
-- name: Read join command
-  command: "cat cluster/join_command.txt"
-  register: join_command
-  delegate_to: 127.0.0.1
+- name: Generate short-lived join token
+  command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"
+  delegate_to: "{{ groups['cluster_init'][0] }}"
+  register: join_token
+
+- debug: var=join_token.stdout_lines.0
+
+- name: Generate hash for CA certificate
+  shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
+  register: public_key_hash
+
+- debug: var=public_key_hash.stdout_lines.0
 
 - name: Join worker
-  command: "{{ join_command.stdout_lines.0 }}"
+  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }}"
   become: yes
