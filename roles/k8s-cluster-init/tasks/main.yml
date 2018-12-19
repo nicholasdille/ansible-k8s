@@ -1,9 +1,9 @@
 ---
 
 - name: Check for running control plane
-  shell: "netstat -tulpan | grep LISTEN | grep :::6443"
+  shell: "systemctl is-active kubelet | grep -v inactive"
   ignore_errors: yes
-  register: port_6443
+  register: kubelet_service_not_present
 
 - include: cluster-init.yml
-  when: 'port_6443 is defined and port_6443.failed'
+  when: 'kubelet_service_not_present is defined and kubelet_service_not_present.failed'
