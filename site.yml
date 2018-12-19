@@ -70,6 +70,9 @@
           - k8s
           - worker
       with_items: "{{ workers.servers }}"
+  tags:
+    - provision
+    - inventory
 
 - name: Create SSH config
   hosts: k8s
@@ -88,6 +91,9 @@
         dest: "~/.ssh/config.d/{{ inventory_hostname }}"
         mode: "0640"
       delegate_to: localhost
+  tags:
+    - provision
+    - inventory
 
 - name: Prepare nodes for Ansible
   hosts: k8s
@@ -100,14 +106,13 @@
         connect_timeout: 5
         timeout: 60
       delegate_to: localhost
-    - name: Print configuration
-      debug:
-        var: hostvars[inventory_hostname]
-        verbosity: 1
     - name: Install updates
       raw: "while fuser /var/lib/apt/lists/lock 2>/dev/null | grep /var/lib/apt/lists/lock; do sleep 1; done && apt-get -y upgrade"
     - name: Install Python
       raw: "apt-get -y install python-pip"
+  tags:
+    - provision
+    - inventory
 
 - name: Prepare all nodes
   hosts: k8s
