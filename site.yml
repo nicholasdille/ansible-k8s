@@ -93,7 +93,6 @@
       delegate_to: localhost
   tags:
     - provision
-    - inventory
 
 - name: Prepare nodes for Ansible
   hosts: k8s
@@ -112,7 +111,6 @@
       raw: "apt-get -y install python-pip"
   tags:
     - provision
-    - inventory
 
 - name: Prepare all nodes
   hosts: k8s
