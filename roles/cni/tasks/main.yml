@@ -1,9 +1,44 @@
 ---
 
-- include: binaries.yml
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /opt/cni/bin
+    - /etc/cni/net.d
+  become: yes
 
-- include: plugins.yml
-  when: cni.components is defined and 'plugins' in cni.components
+- name: Install CNI
+  unarchive:
+    src: "https://github.com/containernetworking/cni/releases/download/v{{ cni.version }}/cni-amd64-v{{ cni.version }}.tgz"
+    dest: "/opt/cni/bin"
+    remote_src: yes
+  become: yes
 
-- include: bridge.yml
+- name: Install CNI plugins
+  unarchive:
+    src: "https://github.com/containernetworking/plugins/releases/download/v{{ cni.plugins_version }}/cni-plugins-amd64-v{{ cni.plugins_version }}.tgz"
+    dest: "/opt/cni/bin"
+    remote_src: yes
+  become: yes
+
+  # See https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge
+- name: Install CNI plugin configuration (bridge)
+  template:
+    src: bridge.conf
+    dest: /etc/cni/net.d
+    owner: root
+    group: root
+  become: yes
   when: cni.config is defined and 'bridge' in cni.config
+
+  # See https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge
+- name: Install CNI plugin configuration (host-device)
+  template:
+    src: host-device.conf
+    dest: /etc/cni/net.d
+    owner: root
+    group: root
+  become: yes
+  when: cni.config is defined and 'host-device' in cni.config

@@ -3,8 +3,8 @@
 cni:
   version: 0.6.0
   plugins_version: 0.7.4
-  # supported values: plugins
-  components: []
-  # supported values: bridge
+
+  # supported values: bridge, host-device
   config: []
+
   bridge_network: "10.10.0.0/16"

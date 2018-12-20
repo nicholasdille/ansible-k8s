@@ -1,9 +1,0 @@
----
-
-- name: Install CNI plugin configuration
-  template:
-    src: bridge.conf
-    dest: /etc/cni/net.d
-    owner: root
-    group: root
-  become: yes
