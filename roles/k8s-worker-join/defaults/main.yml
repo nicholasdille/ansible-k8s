@@ -2,3 +2,4 @@
 
 k8s:
   cri_socket: "/var/run/dockershim.sock"
+  load_balancer: "k8s.dille.io"
