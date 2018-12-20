@@ -1,4 +1,5 @@
 id_rsa*
+host_vars/**
 ssh_known_hosts
 cluster/**
 library/**
