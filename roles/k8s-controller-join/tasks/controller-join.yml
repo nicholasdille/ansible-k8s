@@ -1,38 +1,5 @@
 ---
 
-- name: Create directories for certificates
-  file:
-    path: "/etc/kubernetes/pki/etcd"
-    state: directory
-  become: yes
-
-- name: Copy controlplane certificates
-  copy:
-    src: "cluster/{{ item }}"
-    dest: /etc/kubernetes/pki
-    owner: root
-    group: root
-  become: yes
-  with_items:
-    - admin.conf
-    - ca.crt
-    - ca.key
-    - sa.key
-    - sa.pub
-    - front-proxy-ca.crt
-    - front-proxy-ca.key
-
-- name: Copy etcd certificates
-  copy:
-    src: "cluster/etcd/{{ item }}"
-    dest: /etc/kubernetes/pki/etcd
-    owner: root
-    group: root
-  become: yes
-  with_items:
-    - ca.crt
-    - ca.key
-
 - name: Generate short-lived join token
   command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"
   delegate_to: "{{ groups['cluster_init'][0] }}"
