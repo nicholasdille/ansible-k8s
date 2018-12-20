@@ -7,4 +7,3 @@ apiServer:
 controlPlaneEndpoint: "{{ k8s.load_balancer }}:6443"
 networking:
   podSubnet: "{{ k8s.pod_network }}"
-tokenTTL: 5m
