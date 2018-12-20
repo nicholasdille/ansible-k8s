@@ -3,6 +3,7 @@
 - name: Check for node port range
   command: grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml
   ignore_errors: yes
+  become: yes
   register: node_port_range
 
 - name: Allow all node ports

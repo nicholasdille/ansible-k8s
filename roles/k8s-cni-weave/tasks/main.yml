@@ -2,4 +2,4 @@
 
 - name: Initialize networking
   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://cloud.weave.works/k8s/v1.10/net.yaml"
-  when: weave_version is defined and not weave_version.failed
+  become: yes

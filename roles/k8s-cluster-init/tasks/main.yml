@@ -5,7 +5,5 @@
   ignore_errors: yes
   register: kubelet_service_present
 
-- debug: var=kubelet_service_present
-
 - include: cluster-init.yml
   when: 'kubelet_service_present is defined and kubelet_service_present.failed'

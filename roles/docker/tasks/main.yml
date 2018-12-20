@@ -40,10 +40,6 @@
     dest: /etc/docker
     owner: root
     group: root
+  notify:
+    - "Restart docker"
   become: yes
-
-- name: Configure service
-  systemd:
-    name: docker
-    enabled: yes
-    state: restarted

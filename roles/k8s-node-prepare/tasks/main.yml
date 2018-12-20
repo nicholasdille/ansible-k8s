@@ -58,6 +58,7 @@
     enabled: yes
     state: started
     daemon_reload: yes
+  become: yes
 
 - name: Install prerequisites
   apt:
@@ -67,6 +68,7 @@
 - name: Load modules
   modprobe:
     name: "{{ item }}"
+  become: yes
   with_items:
     - ip_vs
     - ip_vs_rr
@@ -90,9 +92,10 @@
 
 - name: Get swap configuration
   shell: "swapon --noheadings | cut -d' ' -f1"
+  become: yes
   register: swap
 
 - name: Disable swap
   shell: "swapoff {{ swap.stdout_lines.0 }}"
-  when: swap.stdout_lines | length > 0
   become: yes
+  when: swap.stdout_lines | length > 0

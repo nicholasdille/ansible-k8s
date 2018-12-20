@@ -17,3 +17,4 @@
 - name: Reload daemon configuration
   systemd:
     daemon_reload: yes
+  become: yes

@@ -10,3 +10,4 @@
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
     regexp: "--etcd-servers=.+"
     replace: "--etcd-servers={{ k8sHosts }}"
+  become: yes

@@ -1,7 +1,5 @@
 ---
 
-- debug: msg="BEGIN role containerd"
-
 - name: Install prerequisites
   apt:
     name: "{{ containerd.prerequisites }}"
@@ -23,14 +21,11 @@
     dest: "/etc/systemd/system/containerd.service"
   become: yes
 
-- name: Check that the configuration for containerd exists
-  stat:
-    path: /etc/containerd/config.toml
-  register: config_toml
-
 - name: Create default configuration
   command: containerd config default > /etc/containerd/config.toml
-  when: not config_toml.stat.exists
+  args:
+    creates: /etc/containerd/config.toml
+  become: yes
 
 - name: Configure service
   systemd:
@@ -38,5 +33,4 @@
     enabled: yes
     state: started
     daemon_reload: yes
-
-- debug: msg="END role containerd"
+  become: yes

@@ -3,6 +3,7 @@
 - name: Check for running control plane
   shell: "systemctl is-active kubelet | grep -v inactive"
   ignore_errors: yes
+  become: yes
   register: kubelet_service_present
 
 - include: controller-join.yml

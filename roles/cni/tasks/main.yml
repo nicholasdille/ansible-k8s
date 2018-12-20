@@ -1,7 +1,5 @@
 ---
 
-- debug: msg="BEGIN role cni"
-
 - include: binaries.yml
 
 - include: plugins.yml
@@ -9,5 +7,3 @@
 
 - include: bridge.yml
   when: cni.config is defined and 'bridge' in cni.config
-
-- debug: msg="END role cni"
