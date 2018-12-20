@@ -9,8 +9,9 @@
 - name: Generate hash for CA certificate
   shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
   become: yes
+  delegate_to: "{{ groups['cluster_init'][0] }}"
   register: public_key_hash
 
 - name: Join worker
-  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --cri-socket {{ k8s.cri_socket }}"
+  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }}"
   become: yes

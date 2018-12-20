@@ -130,14 +130,6 @@
   tags:
     - k8s-cluster-init
 
-- name: Copy certificates
-  hosts: cluster_join worker
-  roles:
-    - role: k8s-cluster-certificates
-  tags:
-    - k8s-controller-join
-    - k8s-worker-join
-
 - name: Deploy additional masters
   hosts: cluster_join
   serial: 1
