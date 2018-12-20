@@ -11,7 +11,7 @@
 - name: Add parameter for CRI socket
   set_fact:
     cri_socket: "--cri-socket /var/run/containerd/containerd.sock"
-  when: 'containerd_sock.exists and containerd_sock.issock'
+  when: 'containerd_sock.stat.exists and containerd_sock.stat.issock'
 
 - name: Generate short-lived join token
   command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"

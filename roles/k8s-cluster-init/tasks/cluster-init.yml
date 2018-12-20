@@ -50,7 +50,7 @@
 - name: Add parameter for CRI socket
   set_fact:
     cri_socket: "--cri-socket /var/run/containerd/containerd.sock"
-  when: 'containerd_sock.exists and containerd_sock.issock'
+  when: 'containerd_sock.stat.exists and containerd_sock.stat.issock'
 
 - name: Bootstrap master
   command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml {{ cri_socket | default() }}"
