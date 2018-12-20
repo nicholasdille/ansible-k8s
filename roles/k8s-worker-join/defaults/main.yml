@@ -1,0 +1,4 @@
+---
+
+k8s:
+  cri_socket: "/var/run/dockershim.sock"
