@@ -14,5 +14,5 @@
 - debug: var=public_key_hash.stdout_lines.0
 
 - name: Join worker
-  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }}"
+  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --cri-socket {{ k8s.cri_socket }}"
   become: yes

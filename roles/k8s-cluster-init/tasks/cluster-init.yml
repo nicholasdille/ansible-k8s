@@ -40,7 +40,7 @@
   become: yes
 
 - name: Bootstrap master
-  command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml"
+  command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml --cri-socket {{ k8s.cri_socket }}"
   become: yes
 
 - name: Fetch kubeconfig
