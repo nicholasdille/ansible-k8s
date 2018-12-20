@@ -39,8 +39,6 @@
   become: yes
   register: containerd_sock
 
-- debug: var=containerd_sock
-
 - name: Add parameter for CRI socket
   set_fact:
     cri_socket: "--cri-socket /var/run/containerd/containerd.sock"
