@@ -65,8 +65,12 @@ Run role `docker`
 
 Set variable `docker.version` to `18.06.*`
 
+See playbook `k8s-docker.yml`
+
 ### containerd
 
 Run roles `runc`, `cni`, `containerd`
 
 Prepare run time by running `k8s-cri-containerd`
+
+See playbook `k8s-containerd.yml`
