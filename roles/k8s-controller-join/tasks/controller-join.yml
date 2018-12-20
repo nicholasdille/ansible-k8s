@@ -33,6 +33,19 @@
     - ca.crt
     - ca.key
 
+- name: Determine CRI socket
+  stat:
+    path: /var/run/containerd/containerd.sock
+  become: yes
+  register: containerd_sock
+
+- debug: var=containerd_sock
+
+- name: Add parameter for CRI socket
+  set_fact:
+    cri_socket: "--cri-socket /var/run/containerd/containerd.sock"
+  when: 'containerd_sock.exists and containerd_sock.issock'
+
 - name: Generate short-lived join token
   command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"
   delegate_to: "{{ groups['cluster_init'][0] }}"
@@ -44,7 +57,7 @@
   register: public_key_hash
 
 - name: Join controlplane
-  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --experimental-control-plane --cri-socket {{ k8s.cri_socket }}"
+  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --experimental-control-plane {{ cri_socket }}"
   become: yes
   register: cluster_join
 

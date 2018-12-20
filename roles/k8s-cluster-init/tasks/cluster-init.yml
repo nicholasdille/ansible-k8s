@@ -39,8 +39,21 @@
     dest: /etc/kubernetes/kubeadm-config.yml
   become: yes
 
+- name: Determine CRI socket
+  stat:
+    path: /var/run/containerd/containerd.sock
+  become: yes
+  register: containerd_sock
+
+- debug: var=containerd_sock
+
+- name: Add parameter for CRI socket
+  set_fact:
+    cri_socket: "--cri-socket /var/run/containerd/containerd.sock"
+  when: 'containerd_sock.exists and containerd_sock.issock'
+
 - name: Bootstrap master
-  command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml --cri-socket {{ k8s.cri_socket }}"
+  command: "kubeadm init --config /etc/kubernetes/kubeadm-config.yml {{ cri_socket | default() }}"
   become: yes
 
 - name: Fetch kubeconfig

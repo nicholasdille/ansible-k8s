@@ -1,0 +1,154 @@
+---
+
+- name: Initialize cluster
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Provision first master
+      hcloud_server:
+        name:
+          - master1
+        image: ubuntu-16.04
+        server_type: cx21
+        location: fsn1
+        ssh_keys:
+          - 209622
+        token: "{{ hcloud.token }}"
+      register: first_master
+    - name: Create inventory
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.public_ipv4 }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        groups:
+          - controlplane
+          - cluster_init
+      with_items: "{{ first_master.servers }}"
+    - name: Provision additional masters
+      hcloud_server:
+        name:
+          - master2
+          - master3
+        image: ubuntu-16.04
+        server_type: cx21
+        location: fsn1
+        ssh_keys:
+          - 209622
+        token: "{{ hcloud.token }}"
+      register: additional_masters
+    - name: Create inventory
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.public_ipv4 }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        groups:
+          - controlplane
+          - cluster_join
+      with_items: "{{ additional_masters.servers }}"
+    - name: Provision workers
+      hcloud_server:
+        name:
+          - worker1
+          - worker2
+        image: ubuntu-16.04
+        server_type: cx21
+        location: fsn1
+        ssh_keys:
+          - 209622
+        token: "{{ hcloud.token }}"
+      register: workers
+    - name: Create inventory
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.public_ipv4 }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        groups:
+          - k8s
+          - worker
+      with_items: "{{ workers.servers }}"
+  tags:
+    - provision
+    - inventory
+
+- name: Create SSH config
+  hosts: k8s
+  gather_facts: no
+  tasks:
+    - name: Create SSH config
+      copy:
+        content: |
+          # config for {{ inventory_hostname }}
+          Host {{ inventory_hostname }}
+              HostName {{ ansible_host }}
+              User {{ ansible_user }}
+              IdentityFile {{ ansible_ssh_private_key_file }}
+              StrictHostKeyChecking no
+              UserKnownHostsFile /dev/null
+        dest: "~/.ssh/config.d/{{ inventory_hostname }}"
+        mode: "0640"
+      delegate_to: localhost
+  tags:
+    - provision
+
+- name: Prepare nodes for Ansible
+  hosts: k8s
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH to be available
+      wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        connect_timeout: 5
+        timeout: 60
+      delegate_to: localhost
+    - name: Install updates
+      raw: "while lsof /var/lib/apt/lists/lock; do sleep 5; done && apt-get update && apt-get -y upgrade"
+    - name: Install Python
+      raw: "apt-get -y install python-pip"
+  tags:
+    - provision
+
+- name: Prepare all nodes
+  hosts: k8s
+  roles:
+    - role: cni
+    - role: containerd
+    - role: k8s-node-prepare
+    - role: k8s-cri-containerd
+  tags:
+    - k8s-node-prepare
+
+- name: Initialize cluster
+  hosts: cluster_init
+  roles:
+    - role: k8s-cluster-init
+    - role: k8s-cni-weave
+  tags:
+    - k8s-cluster-init
+
+- name: Deploy additional masters
+  hosts: cluster_join
+  serial: 1
+  roles:
+    - role: k8s-controller-join
+  tags:
+    - k8s-controller-join
+
+- name: Configure control planes
+  hosts: controlplane
+  roles:
+    - role: k8s-controller-finish
+    - role: k8s-controller-all-nodeports
+  tags:
+    - k8s-controller-all-nodeports
+
+- name: Deploy workers
+  hosts: worker
+  roles:
+    - role: k8s-worker-join
+  tags:
+    - k8s-worker-join
