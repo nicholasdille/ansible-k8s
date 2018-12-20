@@ -55,7 +55,7 @@
   register: public_key_hash
 
 - name: Join controlplane
-  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --experimental-control-plane {{ cri_socket }}"
+  shell: "kubeadm join {{ k8s.load_balancer }}:6443 --token {{ join_token.stdout_lines.0 }} --discovery-token-ca-cert-hash sha256:{{ public_key_hash.stdout_lines.0 }} --experimental-control-plane {{ cri_socket | default() }}"
   become: yes
   register: cluster_join
 
