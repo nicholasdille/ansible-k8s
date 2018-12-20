@@ -6,7 +6,13 @@ cri:
 k8s:
   version: "{{ lookup('url', 'https://dl.k8s.io/release/stable.txt') }}"
   prerequisites:
-    - socat
     - ipvsadm
-    - ipset
     - ebtables
+    - ethtool
+    - ipset
+    - conntrack
+    - iptables
+    - iptstate
+    - netstat-nat
+    - socat
+    - netbase
