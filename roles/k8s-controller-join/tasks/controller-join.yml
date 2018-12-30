@@ -46,7 +46,7 @@
 
 - name: Generate short-lived join token
   command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"
-  delegate_to: "{{ groups['cluster_init'][0] }}"
+  delegate_to: "{{ first_controller }}"
   register: join_token
 
 - name: Generate hash for CA certificate

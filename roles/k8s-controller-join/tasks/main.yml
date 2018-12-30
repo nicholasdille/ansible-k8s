@@ -7,4 +7,4 @@
   register: kubelet_service_present
 
 - include: controller-join.yml
-  when: 'kubelet_service_present is defined and kubelet_service_present.failed'
+  when: 'first_controller is defined and kubelet_service_present is defined and kubelet_service_present.failed'

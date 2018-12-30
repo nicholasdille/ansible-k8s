@@ -135,6 +135,8 @@
 - name: Deploy additional masters
   hosts: cluster_join
   serial: 1
+  vars:
+    first_controller: "{{ groups['cluster_init'] }}"
   roles:
     - role: k8s-controller-join
   tags:
