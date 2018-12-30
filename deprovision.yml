@@ -1,0 +1,25 @@
+---
+
+- name: Remove nodes
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - hcloud_server:
+        name:
+          - master1
+          - master2
+          - master3
+          - worker1
+          - worker2
+        image: ubuntu-18.04
+        server_type: cx21
+        location: fsn1
+        ssh_keys:
+          - 209622
+        token: "{{ hcloud.token }}"
+      register: nodes
+    - file:
+        path: "~/.ssh/config.d/hcloud_{{ item.name }}"
+        state: absent
+      with_items: "{{ nodes.servers }}"
