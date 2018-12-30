@@ -1,0 +1,15 @@
+---
+
+- name: Prepare environment
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Ensure library directory is present
+      file:
+        path: library
+        state: directory
+    - name: Install modules for Hetzner Cloud
+      unarchive:
+        src: https://github.com/thetechnick/hcloud-ansible/releases/download/v0.3.2/hcloud-ansible_v0.3.2_linux_amd64.zip
+        dest: library
+        remote_src: yes
