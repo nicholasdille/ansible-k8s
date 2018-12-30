@@ -1,7 +1,5 @@
 ---
 
-# HCLOUD_TOKEN=$(ansible-vault view group_vars/all/vault | grep vault_hcloud_token | cut -d' ' -f2) ansible-playbook -i library/hcloud_inventory k8s-test.yml
-
 - name: Prepare inventory
   hosts: localhost
   gather_facts: no

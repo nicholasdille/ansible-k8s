@@ -74,3 +74,19 @@ Run roles `runc`, `cni`, `containerd`
 Prepare run time by running `k8s-cri-containerd`
 
 See playbook `k8s-containerd.yml`
+
+## Playbooks
+
+`prepare.yml` prepares the local environment to work with the Hetzner Cloud
+
+`provision.yml` provisions VM in the Hetzner Cloud and prepares them for usage
+
+`k8s-docker.yml` creates a cluster with Docker as runtime
+
+`k8s-containerd.yml` creates a cluster with containerd as runtime
+
+The playbooks `k8s-*.yml` rely on a dynamic inventory for the Hetzner Cloud. The should be called as shown in the following snippet:
+
+```bash
+HCLOUD_TOKEN=$(ansible-vault view group_vars/all/vault | grep vault_hcloud_token | cut -d' ' -f2) ansible-playbook -i library/hcloud_inventory k8s-docker.yml
+```
