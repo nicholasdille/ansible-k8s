@@ -1,6 +1,4 @@
 ---
 
 k8s:
-  dns_zone: dille.io
-  dns_record: k8s
   load_balancer: "k8s.dille.io"

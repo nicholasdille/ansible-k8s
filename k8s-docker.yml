@@ -47,6 +47,29 @@
   tags:
     - k8s-node-prepare
 
+- name: Prepare DNS
+  hosts: first_controller
+  vars:
+    dns_zone: dille.io
+    dns_record: k8s
+  tasks:
+    - name: Clear DNS records for load balancer
+      cloudflare_dns:
+        zone: "{{ dns_zone }}"
+        record: "{{ dns_record }}"
+        type: A
+        state: absent
+        account_email: "{{ cloudflare.email }}"
+        account_api_token: "{{ cloudflare.token }}"
+    - name: Create DNS record for first node
+      cloudflare_dns:
+        zone: "{{ dns_zone }}"
+        record: "{{ dns_record }}"
+        type: A
+        value: "{{ ansible_default_ipv4.address }}"
+        account_email: "{{ cloudflare.email }}"
+        account_api_token: "{{ cloudflare.token }}"
+
 - name: Initialize cluster
   hosts: first_controller
   roles:
@@ -60,8 +83,19 @@
   serial: 1
   vars:
     first_controller: "{{ groups['cluster_init'][0] }}"
+    dns_zone: dille.io
+    dns_record: k8s
   roles:
     - role: k8s-controller-join
+  tasks:
+    - name: Add DNS record for load balancer
+      cloudflare_dns:
+        zone: "{{ dns_zone }}"
+        record: "{{ dns_record }}"
+        type: A
+        value: "{{ ansible_default_ipv4.address }}"
+        account_email: "{{ cloudflare.email }}"
+        account_api_token: "{{ cloudflare.token }}"
   tags:
     - k8s-controller-join
 

@@ -1,25 +1,5 @@
 ---
 
-- name: Clear DNS records for load balancer
-  cloudflare_dns:
-    zone: "{{ k8s.dns_zone }}"
-    record: "{{ k8s.dns_record }}"
-    type: A
-    state: absent
-    account_email: "{{ cloudflare.email }}"
-    account_api_token: "{{ cloudflare.token }}"
-  when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
-
-- name: Create DNS record for first node
-  cloudflare_dns:
-    zone: "{{ k8s.dns_zone }}"
-    record: "{{ k8s.dns_record }}"
-    type: A
-    value: "{{ ansible_default_ipv4.address }}"
-    account_email: "{{ cloudflare.email }}"
-    account_api_token: "{{ cloudflare.token }}"
-  when: cloudflare is defined and cloudflare.email is defined and cloudflare.token is defined
-
 - name: Create configuration directory
   file:
     path: /etc/kubernetes

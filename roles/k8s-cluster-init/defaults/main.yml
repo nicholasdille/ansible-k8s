@@ -5,6 +5,4 @@ cri:
 
 k8s:
   pod_network: "192.168.0.0/16"
-  dns_zone: dille.io
-  dns_record: k8s
   load_balancer: "k8s.dille.io"
