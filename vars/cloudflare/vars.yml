@@ -3,6 +3,3 @@
 cloudflare:
   email: "{{ vault_cloudflare_email }}"
   token: "{{ vault_cloudflare_token }}"
-
-hcloud:
-  token: "{{vault_hcloud_token }}"
