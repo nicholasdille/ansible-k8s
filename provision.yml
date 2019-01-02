@@ -14,7 +14,7 @@
           - worker2
         image: ubuntu-18.04
         server_type: cx21
-        location: fsn1
+        location: nbg1
         ssh_keys:
           - 209622
         token: "{{ hcloud.token }}"
@@ -24,6 +24,7 @@
         ansible_host: "{{ item.public_ipv4 }}"
         ansible_user: root
         ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        hcloud_server_id: "{{ item.id }}"
         groups:
           - k8s
       with_items: "{{ nodes.servers }}"
@@ -65,6 +66,39 @@
     - name: Install updates
       raw: "apt-get update && apt-get -y upgrade"
     - name: Install Python
-      raw: "apt-get -y install python-pip"
+      raw: "apt-get -y install python-pip jq"
+  tags:
+    - provision
+
+- name: Manage volume
+  hosts: k8s
+  vars:
+    hcloud_path: ~/.local/bin/
+  tasks:
+    - name: Check if volume exists
+      shell: "{{ hcloud_path }}hcloud volume list -o columns=name | grep {{ inventory_hostname }}-docker"
+      register: volume_exists
+      failed_when: '"command not found" in volume_exists.stderr'
+      delegate_to: localhost
+
+    - debug:
+        var: volume_exists
+        verbosity: 1
+    - name: Create volume
+      shell: "{{ hcloud_path }}hcloud volume create --size 20 --name {{ inventory_hostname }}-docker --location nbg1"
+      delegate_to: localhost
+      when: 'volume_exists is defined and volume_exists.failed'
+    - name: Check if volume is attached
+      shell: "{{ hcloud_path }}hcloud volume list -o columns=name,server | grep {{ inventory_hostname }}-docker | grep {{ hcloud_server_id }}"
+      register: volume_attached
+      failed_when: '"command not found" in volume_attached.stderr'
+      delegate_to: localhost
+    - debug:
+        var: volume_attached
+        verbosity: 1
+    - name: Attach volume
+      shell: "{{ hcloud_path }}hcloud volume attach --server {{ inventory_hostname }} {{ inventory_hostname }}-docker"
+      delegate_to: localhost
+      when: 'volume_attached is defined and volume_attached.failed'
   tags:
     - provision
