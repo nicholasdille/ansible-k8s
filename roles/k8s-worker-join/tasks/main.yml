@@ -1,5 +1,9 @@
 ---
 
+- name: Check if required variables are defined
+  command: "false"
+  when: 'k8s.load_balancer is undefined'
+
 - name: Check for running control plane
   shell: "systemctl is-active kubelet | grep -E '^active$'"
   ignore_errors: yes

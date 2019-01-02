@@ -11,3 +11,4 @@ vsphere:
   template: template_xenial_k8s
   network: LAN Build
   domain: "{{ vault_vsphere_domain }}"
+  ssh_private_key: ~/id_rsa_rdadm

@@ -4,5 +4,5 @@ cri:
   ctl_version: 1.11.1
 
 k8s:
-  pod_network: "192.168.0.0/16"
-  load_balancer: "k8s.dille.io"
+  pod_network: null
+  load_balancer: null

@@ -1,4 +1,4 @@
 ---
 
 k8s:
-  load_balancer: "k8s.dille.io"
+  load_balancer: null

@@ -7,4 +7,4 @@ cni:
   # supported values: bridge, host-device
   config: []
 
-  bridge_network: "10.10.0.0/16"
+  bridge_network: null

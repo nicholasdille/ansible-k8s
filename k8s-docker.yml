@@ -3,9 +3,8 @@
 - name: Prepare inventory
   hosts: localhost
   gather_facts: no
-  vars:
-    master_pattern: "^master[0-9]+$"
-    worker_pattern: "^worker[0-9]+$"
+  vars_files:
+    - vars/global.yml
   tasks:
     - name: Create group for masters
       add_host:
@@ -14,8 +13,8 @@
           - k8s
           - controller
         ansible_user: root
-        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
-      with_items: "{{ groups['all'] | select('match', master_pattern) | list }}"
+        ansible_ssh_private_key_file: "{{ ssh_private_key }}"
+      with_items: "{{ groups['all'] | select('match', controller_pattern) | list }}"
     - name: Create group for first master
       add_host:
         name: "{{ groups['controller'] | first() }}"
@@ -33,26 +32,29 @@
         groups:
           - k8s
           - worker
-        ansible_user: root
-        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        ansible_user: "{{ ssh_user }}"
+        ansible_ssh_private_key_file: "{{ ssh_private_key }}"
       with_items: "{{ groups['all'] | select('match', worker_pattern) | list }}"
 
 - name: Prepare all nodes
   hosts: k8s
+  vars_files:
+    - vars/global.yml
   roles:
     - role: volume-docker
     - role: docker
       docker:
-        version: "18.06.*"
+        version: "{{ k8s_docker_version }}"
     - role: k8s-node-prepare
   tags:
     - k8s-node-prepare
 
 - name: Prepare DNS
   hosts: first_controller
-  vars:
-    dns_zone: dille.io
-    dns_record: k8s
+  vars_files:
+    - vars/global.yml
+    - vars/cloudflare/vars.yml
+    - vars/cloudflare/vault.yml
   tasks:
     - name: Clear DNS records for load balancer
       cloudflare_dns:
@@ -73,6 +75,8 @@
 
 - name: Initialize cluster
   hosts: first_controller
+  vars_files:
+    - vars/global.yml
   roles:
     - role: k8s-cluster-init
     - role: k8s-cni-weave
@@ -82,10 +86,12 @@
 - name: Deploy additional masters
   hosts: additional_controllers
   serial: 1
+  vars_files:
+    - vars/global.yml
+    - vars/cloudflare/vars.yml
+    - vars/cloudflare/vault.yml
   vars:
     first_controller: "{{ groups['cluster_init'][0] }}"
-    dns_zone: dille.io
-    dns_record: k8s
   roles:
     - role: k8s-controller-join
   tasks:

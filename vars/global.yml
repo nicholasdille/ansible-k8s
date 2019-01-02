@@ -1,0 +1,22 @@
+---
+
+controller_pattern: "^controller[0-9]+$"
+worker_pattern: "^worker[0-9]+$"
+
+ssh_user: root
+ssh_private_key: "{{ hcloud.ssh_private_key }}"
+
+dns:
+  zone: dille.io
+  record: k8s
+
+docker:
+  version: 18.06.*
+
+cni:
+  bridge_network: 10.10.0.0/16
+
+k8s:
+  version: 1.13.1
+  load_balancer: "{{ dns.record }}.{{ dns.zone }}"
+  pod_network: 192.168.0.0/16

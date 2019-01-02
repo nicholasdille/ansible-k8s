@@ -25,7 +25,7 @@
         name: "{{ item.name }}"
         ansible_host: "{{ item.public_ipv4 }}"
         ansible_user: root
-        ansible_ssh_private_key_file: "~/id_rsa_hetzner"
+        ansible_ssh_private_key_file: "{{ hcloud.ssh_private_key }}"
         hcloud_server_id: "{{ item.id }}"
         groups:
           - k8s

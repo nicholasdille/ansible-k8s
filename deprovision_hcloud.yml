@@ -4,6 +4,9 @@
   hosts: localhost
   connection: local
   gather_facts: no
+  vars_files:
+    - vars/hcloud/vars.yml
+    - vars/hcloud/vault.yml
   tasks:
     - hcloud_server:
         name:
@@ -12,13 +15,8 @@
           - master3
           - worker1
           - worker2
-        image: ubuntu-18.04
-        server_type: cx21
-        location: fsn1
-        ssh_keys:
-          - 209622
+        state: absent
         token: "{{ hcloud.token }}"
-      register: nodes
     - file:
         path: "~/.ssh/config.d/hcloud_{{ item.name }}"
         state: absent

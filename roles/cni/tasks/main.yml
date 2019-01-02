@@ -23,6 +23,10 @@
     remote_src: yes
   become: yes
 
+- name: Check if required variables are defined
+  command: "false"
+  when: 'cni.bridge_network is undefined'
+
   # See https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge
 - name: Install CNI plugin configuration (bridge)
   template:
