@@ -1,0 +1,9 @@
+---
+
+hcloud:
+  token: "{{ vault_hcloud_token }}"
+  image: ubuntu-18.04
+  server_type: cx21
+  location: nbg1
+  ssh_keys:
+    - 209622

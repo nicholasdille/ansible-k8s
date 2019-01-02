@@ -4,6 +4,9 @@
   hosts: localhost
   connection: local
   gather_facts: no
+  vars_files:
+    - vars/hcloud/vars.yml
+    - vars/hcloud/vault.yml
   tasks:
     - hcloud_server:
         name:
@@ -12,11 +15,10 @@
           - master3
           - worker1
           - worker2
-        image: ubuntu-18.04
-        server_type: cx21
-        location: nbg1
-        ssh_keys:
-          - 209622
+        image: "{{ hcloud.image }}"
+        server_type: "{{ hcloud.server_type }}"
+        location: "{{ hcloud.location }}"
+        ssh_keys: "{{ hcloud.ssh_keys"
         token: "{{ hcloud.token }}"
       register: nodes
     - add_host:
