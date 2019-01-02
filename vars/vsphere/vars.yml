@@ -1,0 +1,13 @@
+---
+
+vsphere:
+  hostname: "{{ vault_vsphere_hostname }}"
+  username: "{{ vault_vsphere_username }}"
+  password: "{{ vault_vsphere_password }}"
+  datacenter: SWD
+  cluster: SWD Infrastructure
+  folder: Infrastructure/Infra/RD/Infra/Kubernetes
+  resource_pool: RD_Infra
+  template: template_xenial_k8s
+  network: LAN Build
+  domain: "{{ vault_vsphere_domain }}"
