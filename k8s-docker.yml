@@ -71,6 +71,8 @@
         value: "{{ ansible_default_ipv4.address }}"
         account_email: "{{ cloudflare.email }}"
         account_api_token: "{{ cloudflare.token }}"
+  tags:
+    - k8s-cluster-init
 
 - name: Initialize cluster
   hosts: first_controller
@@ -115,6 +117,8 @@
 
 - name: Deploy workers
   hosts: worker
+  vars_files:
+    - vars/global.yml
   vars:
     controller: "{{ groups['first_controller'][0] }}"
   roles:
