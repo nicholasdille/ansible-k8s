@@ -1,0 +1,48 @@
+---
+
+- name: Find device
+  shell: "lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == \"disk\") | select(.children == null) | .name'"
+  args:
+    executable: /bin/bash
+  register: device
+
+- debug:
+    msg: Using device {{ device.stdout }}
+
+- name: Create partition
+  shell: "echo -e 'n\np\n1\n\n\nw' | fdisk /dev/{{ device.stdout_lines.0 }}"
+  args:
+    executable: /bin/bash
+  when: 'device is defined and not device.failed and device.stdout_lines | length == 1'
+
+- name: Find partition
+  shell: "lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .name'"
+  args:
+    executable: /bin/bash
+  register: partition
+
+- debug:
+    msg: Using partition {{ partition.stdout }}
+
+- name: Check for existing filesystem
+  shell: "lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .fstype'"
+  args:
+    executable: /bin/bash
+  register: fs
+
+- debug:
+    msg: Found fs of type {{ fs.stdout }}
+
+- name: Format partition
+  filesystem:
+    dev: "/dev/{{ partition.stdout_lines.0 }}"
+    type: btrfs
+  when: 'fs is defined and not fs.failed and fs.stdout == "null" and partition is defined and not partition.failed'
+
+- name: Mount partition
+  mount:
+    path: /var/lib/docker
+    src: "/dev/{{ partition.stdout_lines.0 }}"
+    fstype: btrfs
+    state: mounted
+  when: 'partition is defined and partition.stdout_lines | length == 1'

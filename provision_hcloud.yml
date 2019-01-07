@@ -10,15 +10,15 @@
   tasks:
     - hcloud_server:
         name:
-          - master1
-          - master2
-          - master3
+          - controller1
+          - controller2
+          - controller3
           - worker1
           - worker2
         image: "{{ hcloud.image }}"
         server_type: "{{ hcloud.server_type }}"
         location: "{{ hcloud.location }}"
-        ssh_keys: "{{ hcloud.ssh_keys"
+        ssh_keys: "{{ hcloud.ssh_keys }}"
         token: "{{ hcloud.token }}"
       register: nodes
     - add_host:
@@ -76,31 +76,13 @@
   hosts: k8s
   vars:
     hcloud_path: ~/.local/bin/
+  vars_files:
+    - vars/global.yml
+    - vars/hcloud/vars.yml
+    - vars/hcloud/vault.yml
   tasks:
-    - name: Check if volume exists
-      shell: "{{ hcloud_path }}hcloud volume list -o columns=name | grep {{ inventory_hostname }}-docker"
-      register: volume_exists
-      failed_when: '"command not found" in volume_exists.stderr'
-      delegate_to: localhost
-
-    - debug:
-        var: volume_exists
-        verbosity: 1
-    - name: Create volume
-      shell: "{{ hcloud_path }}hcloud volume create --size 20 --name {{ inventory_hostname }}-docker --location nbg1"
-      delegate_to: localhost
-      when: 'volume_exists is defined and volume_exists.failed'
-    - name: Check if volume is attached
-      shell: "{{ hcloud_path }}hcloud volume list -o columns=name,server | grep {{ inventory_hostname }}-docker | grep {{ hcloud_server_id }}"
-      register: volume_attached
-      failed_when: '"command not found" in volume_attached.stderr'
-      delegate_to: localhost
-    - debug:
-        var: volume_attached
-        verbosity: 1
-    - name: Attach volume
-      shell: "{{ hcloud_path }}hcloud volume attach --server {{ inventory_hostname }} {{ inventory_hostname }}-docker"
-      delegate_to: localhost
-      when: 'volume_attached is defined and volume_attached.failed'
+    - name: Create volumes
+      include_tasks: provision_hcloud_volume.yml
+      when: 'hcloud.use_volumes'
   tags:
     - provision

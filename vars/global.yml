@@ -1,10 +1,15 @@
 ---
 
+use_volumes: false
+
+hcloud:
+  use_volumes: "{{ use_volumes }}"
+
 controller_pattern: "^controller[0-9]+$"
 worker_pattern: "^worker[0-9]+$"
 
 ssh_user: root
-ssh_private_key: "{{ hcloud.ssh_private_key }}"
+ssh_private_key: "~/id_rsa_hetzner"
 
 dns:
   zone: dille.io
@@ -17,6 +22,6 @@ cni:
   bridge_network: 10.10.0.0/16
 
 k8s:
-  version: 1.13.1
+  version: v1.13.1
   load_balancer: "{{ dns.record }}.{{ dns.zone }}"
   pod_network: 192.168.0.0/16

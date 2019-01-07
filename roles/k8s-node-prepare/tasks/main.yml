@@ -2,7 +2,7 @@
 
 - name: Install crictl
   unarchive:
-    src: "https://github.com/kubernetes-incubator/cri-tools/releases/download/v{{ cri.ctl_version }}/crictl-v{{cri.ctl_version }}-linux-amd64.tar.gz"
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri.ctl_version }}/crictl-v{{ cri.ctl_version }}-linux-amd64.tar.gz"
     dest: "/usr/local/bin"
     remote_src: yes
     owner: root
