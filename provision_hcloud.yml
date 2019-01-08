@@ -65,6 +65,8 @@
       delegate_to: localhost
     - name: Making sure no other apt-get task is running
       raw: "while lsof /var/lib/apt/lists/lock; do sleep 5; done"
+    - name: Making sure no other dpkg task is running
+      raw: "while lsof /var/lib/dpkg/lock-frontend; do sleep 5; done"
     - name: Install updates
       raw: "apt-get update && apt-get -y upgrade"
     - name: Install Python
