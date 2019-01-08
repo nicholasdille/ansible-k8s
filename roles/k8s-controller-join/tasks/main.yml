@@ -5,10 +5,10 @@
   when: 'k8s.load_balancer is undefined'
 
 - name: Check for running control plane
-  shell: "systemctl is-active kubelet | grep -E '^active$'"
+  shell: "systemctl is-active kubelet || true"
   ignore_errors: yes
   become: yes
-  register: kubelet_service_present
+  register: kubelet_state
 
 - include: controller-join.yml
-  when: 'first_controller is defined and kubelet_service_present is defined and kubelet_service_present.failed'
+  when: 'first_controller is defined and kubelet_state is defined and not kubelet_state.failed and kubelet_state.stdout_lines | length == 1 and kubelet_state.stdout == "inactive"'
