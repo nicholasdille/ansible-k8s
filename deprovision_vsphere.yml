@@ -1,0 +1,54 @@
+---
+
+# REQUIRES: pip install PyVmomi
+
+- name: Creating temporary inventory for parallel deployment
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - add_host:
+        name: "{{ item }}"
+        groups:
+          - k8s
+      with_items:
+        - controller1
+        - controller2
+        - controller3
+        - worker1
+        - worker2
+
+- name: Provision nodes
+  hosts: k8s
+  gather_facts: no
+  vars_files:
+    - vars/vsphere/vars.yml
+    - vars/vsphere/vault.yml
+  tasks:
+    - name: Delete VMs
+      vmware_guest:
+        hostname: "{{ vsphere.hostname }}"
+        username: "{{ vsphere.username }}"
+        password: "{{ vsphere.password }}"
+        validate_certs: no
+        datacenter: "{{ vsphere.datacenter }}"
+        #cluster: "{{ vsphere.cluster }}"
+        folder: "{{ vsphere.folder }}"
+        #resource_pool: "{{ vsphere.resource_pool }}"
+        name: "{{ inventory_hostname }}"
+        state: absent
+        #template: "{{ vsphere.template }}"
+        #guest_id: ubuntu64Guest
+        #networks:
+        #  - name: "{{ vsphere.network }}"
+        #    start_connected: true
+        #wait_for_ip_address: true
+        #customization:
+        #  domain: "{{ vsphere.domain }}"
+        #  dns_suffix:
+        #    - "{{ vsphere.domain }}"
+        force: yes
+      delegate_to: localhost
+    - file:
+        path: "~/.ssh/config.d/vsphere_{{ inventory_hostname }}"
+        state: absent
+      delegate_to: localhost
