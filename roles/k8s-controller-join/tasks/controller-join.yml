@@ -46,6 +46,7 @@
 
 - name: Generate short-lived join token
   command: "kubeadm token create --description='Join for {{ inventory_hostname }}' --ttl=5m"
+  become: yes
   delegate_to: "{{ first_controller }}"
   register: join_token
 

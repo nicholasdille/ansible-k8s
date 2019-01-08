@@ -11,4 +11,4 @@
   register: kubelet_state
 
 - include: cluster-init.yml
-  when: 'kubelet_state is defined and not kubelet_state.failed and kubelet_state.stdout_lines | length == 1 and kubelet_state.stdout == "inactive"'
+  when: 'kubelet_state is defined and not kubelet_state.failed and kubelet_state.stdout_lines | length == 1 and kubelet_state.stdout != "active"'

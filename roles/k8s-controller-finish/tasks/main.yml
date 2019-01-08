@@ -4,6 +4,7 @@
   shell: function join_by { local IFS="$1"; shift; echo "$*"; }; join_by "," $(for IP in $(kubectl --kubeconfig=/etc/kubernetes/admin.conf get nodes --selector=node-role.kubernetes.io/master= -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}'); do echo "https://$IP:2379"; done)
   args:
     executable: /bin/bash
+  become: yes
   register: etcd_hosts
 
 - name: Die if etcd hosts were not discovered correctly
