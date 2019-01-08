@@ -6,13 +6,16 @@
   vars_files:
     - vars/global.yml
   tasks:
-    - set_fact:
+    - name: Creating list of controllers
+      set_fact:
         controller_list: "{{ controller_list | default([]) }} + [ '{{ controller.prefix }}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, controller.count + 1, 1) | list }}"
-    - set_fact:
+    - name: Selecting first controller
+      set_fact:
         worker_list: "{{ worker_list | default([]) }} + [ '{{ worker.prefix}}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, worker.count + 1, 1) | list }}"
-    - set_fact:
+    - name: Creating list of workers
+      set_fact:
         vm_list: "{{ controller_list + worker_list }}"
     - name: Create group for controller
       add_host:

@@ -1,6 +1,14 @@
 ---
 
-# REQUIRES: pip install PyVmomi
+- name: Install prerequisites
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name:
+      pip:
+        name:
+          - PyVmomi
+      become: yes
 
 - name: Creating temporary inventory for parallel deployment
   hosts: localhost

@@ -11,6 +11,8 @@ worker:
   prefix: worker
   count: 2
 
+provisioner: hcloud
+
 ssh_user: root
 ssh_private_key: "~/id_rsa_hetzner"
 

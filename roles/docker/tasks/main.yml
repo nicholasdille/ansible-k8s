@@ -2,13 +2,12 @@
 
 - name: Install prerequisites
   apt:
-    name: "{{ item }}"
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
     update_cache: yes
   become: yes
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - software-properties-common
 
 - name: Add Docker apt key
   apt_key:

@@ -10,14 +10,13 @@
   tasks:
     - hcloud_server:
         name:
-          - master1
-          - master2
-          - master3
+          - controller1
+          - controller2
+          - controller3
           - worker1
           - worker2
         state: absent
         token: "{{ hcloud.token }}"
     - file:
-        path: "~/.ssh/config.d/hcloud_{{ item.name }}"
+        path: "~/.ssh/config.d/hcloud_*"
         state: absent
-      with_items: "{{ nodes.servers }}"
