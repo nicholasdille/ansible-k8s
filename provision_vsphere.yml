@@ -10,12 +10,7 @@
         name: "{{ item }}"
         groups:
           - k8s
-      with_items:
-        - controller1
-        - controller2
-        - controller3
-        - worker1
-        - worker2
+      with_items: "{{ vm_list }}"
 
 - name: Provision nodes
   hosts: k8s

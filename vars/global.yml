@@ -5,8 +5,12 @@ use_volumes: false
 hcloud:
   use_volumes: "{{ use_volumes }}"
 
-controller_pattern: "^controller[0-9]+$"
-worker_pattern: "^worker[0-9]+$"
+controller:
+  prefix: controller
+  count: 3
+worker:
+  prefix: worker
+  count: 2
 
 ssh_user: root
 ssh_private_key: "~/id_rsa_hetzner"

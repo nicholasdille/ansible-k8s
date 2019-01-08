@@ -1,5 +1,21 @@
 ---
 
+- name: Prepare environment
+  hosts: localhost
+  gather_facts: no
+  vars:
+    hcloud_module_version: 0.3.2
+  tasks:
+    - name: Ensure library directory is present
+      file:
+        path: library
+        state: directory
+    - name: Install modules for Hetzner Cloud
+      unarchive:
+        src: "https://github.com/thetechnick/hcloud-ansible/releases/download/v{{ hcloud_module_version }}/hcloud-ansible_v{{ hcloud_module_version }}_linux_amd64.zip"
+        dest: library
+        remote_src: yes
+
 - name: Provision nodes
   hosts: localhost
   connection: local
@@ -9,12 +25,7 @@
     - vars/hcloud/vault.yml
   tasks:
     - hcloud_server:
-        name:
-          - controller1
-          - controller2
-          - controller3
-          - worker1
-          - worker2
+        name: "{{ vm_list }}"
         image: "{{ hcloud.image }}"
         server_type: "{{ hcloud.server_type }}"
         location: "{{ hcloud.location }}"

@@ -1,15 +1,10 @@
 ---
 
-- name: Prepare environment
+- name: Sanity checks
   hosts: localhost
   gather_facts: no
   tasks:
-    - name: Ensure library directory is present
-      file:
-        path: library
-        state: directory
-    - name: Install modules for Hetzner Cloud
-      unarchive:
-        src: https://github.com/thetechnick/hcloud-ansible/releases/download/v0.3.2/hcloud-ansible_v0.3.2_linux_amd64.zip
-        dest: library
-        remote_src: yes
+    - name: Check Ansible version
+      assert:
+        that: 'ansible_version.full is version_compare("2.7.4", ">=")'
+        msg: 'Broken set_fact (https://www.jeffgeerling.com/blog/2017/adding-strings-array-ansible)'
