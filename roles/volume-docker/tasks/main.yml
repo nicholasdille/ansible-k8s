@@ -7,7 +7,7 @@
   register: volume
 
 - include: btrfs.yml
-  when: 'volume is defined and volume.stdout_lines | length == 0 and docker.volume_fs == "btrfs"'
+  when: 'volume.stdout_lines | length == 0 and docker.volume_fs == "btrfs"'
 
 - include: zfs.yml
-  when: 'volume is defined and volume.stdout_lines | length == 0 and docker.volume_fs == "zfs"'
+  when: 'volume.stdout_lines | length == 0 and docker.volume_fs == "zfs"'

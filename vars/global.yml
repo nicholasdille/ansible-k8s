@@ -1,7 +1,6 @@
 ---
 
-use_volumes: false
-
+use_volumes: true
 hcloud:
   use_volumes: "{{ use_volumes }}"
 
@@ -21,6 +20,7 @@ dns:
 
 docker:
   version: 18.06.*
+  volume_fs: zfs
 
 cni:
   bridge_network: 10.10.0.0/16
