@@ -15,18 +15,18 @@
         ansible_user: root
         ansible_ssh_private_key_file: "{{ ssh_private_key }}"
       with_items: "{{ groups['all'] | select('match', controller_pattern) | list }}"
-    - name: Create group for first master
+    - name: Create group for first controller
       add_host:
-        name: "{{ groups['controller'] | first() }}"
+        name: "{{ groups['controller'] | sort | first }}"
         groups:
           - first_controller
-    - name: Create group for additional masters
+    - name: Create group for additional controller
       add_host:
         name: "{{ item }}"
         groups:
           - additional_controllers
       with_items: "{{ groups['controller'] | difference(groups['first_controller']) }}"
-    - name: Create group for masters
+    - name: Create group for workers
       add_host:
         name: "{{ item }}"
         groups:
@@ -59,23 +59,27 @@
   tasks:
     - name: Clear DNS records for load balancer
       cloudflare_dns:
-        zone: "{{ dns_zone }}"
-        record: "{{ dns_record }}"
+        zone: "{{ dns.zone }}"
+        record: "{{ dns.record }}"
         type: A
         state: absent
         account_email: "{{ cloudflare.email }}"
         account_api_token: "{{ cloudflare.token }}"
     - name: Create DNS record for first node
       cloudflare_dns:
-        zone: "{{ dns_zone }}"
-        record: "{{ dns_record }}"
+        zone: "{{ dns.zone }}"
+        record: "{{ dns.record }}"
         type: A
         value: "{{ ansible_default_ipv4.address }}"
         account_email: "{{ cloudflare.email }}"
         account_api_token: "{{ cloudflare.token }}"
+  tags:
+    - k8s-cluster-init
 
 - name: Initialize cluster
   hosts: first_controller
+  vars_files:
+    - vars/global.yml
   roles:
     - role: k8s-cluster-init
     - role: k8s-cni-weave
@@ -90,14 +94,14 @@
     - vars/cloudflare/vars.yml
     - vars/cloudflare/vault.yml
   vars:
-    first_controller: "{{ groups['cluster_init'][0] }}"
+    first_controller: "{{ groups['first_controller'][0] }}"
   roles:
     - role: k8s-controller-join
   tasks:
     - name: Add DNS record for load balancer
       cloudflare_dns:
-        zone: "{{ dns_zone }}"
-        record: "{{ dns_record }}"
+        zone: "{{ dns.zone }}"
+        record: "{{ dns.record }}"
         type: A
         value: "{{ ansible_default_ipv4.address }}"
         account_email: "{{ cloudflare.email }}"
@@ -115,6 +119,10 @@
 
 - name: Deploy workers
   hosts: worker
+  vars_files:
+    - vars/global.yml
+  vars:
+    controller: "{{ groups['first_controller'][0] }}"
   roles:
     - role: k8s-worker-join
   tags:
