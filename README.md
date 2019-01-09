@@ -4,7 +4,7 @@ According to [stacked control planes with `kubeadm`](https://kubernetes.io/docs/
 
 ## Tested components
 
-- Ansible 2.5.1
+- Ansible 2.7.4
 - Ubuntu 16.04, 18.04
 - Docker 18.06
 - runc 1.0.0-rc6
