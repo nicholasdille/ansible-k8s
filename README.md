@@ -18,14 +18,14 @@ See [documentation](docs)
 ## Quickstart
 
 1. Make sure the follow applies to you:
-  - You are planning to use one of the [supported provisioners](docs/provisioners.md)
+    - You are planning to use one of the [supported provisioners](docs/provisioners.md)
 
 1. Configure the provisioner, e.g. hcloud
-  - Edit `vars/hcloud/vars.yml`
-  - Update credentials: `ansible-vault create vars/hcloud/vault.yml`
+    - Edit `vars/hcloud/vars.yml`
+    - Update credentials: `ansible-vault create vars/hcloud/vault.yml`
 
 1. Configure the deployment
-  - Edit `vars/global.yml`
+    - Edit `vars/global.yml`
 
 1. Run a playbook for a [supported runtime](docs/runtimes.md)
-  - `ansible-playbook k8s-docker.yml`
+    - `ansible-playbook k8s-docker.yml`
