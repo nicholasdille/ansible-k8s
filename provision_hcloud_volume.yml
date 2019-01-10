@@ -1,19 +1,18 @@
 ---
 
 - name: Download and deflate prerequisites
-  vars:
-    hcloud_version: 1.10.0
   unarchive:
-    src: "https://github.com/hetznercloud/cli/releases/download/v{{ hcloud_version }}/hcloud-linux-amd64-v{{ hcloud_version }}.tar.gz"
-    dest: "/tmp/hcloud/"
+    src: "https://github.com/hetznercloud/cli/releases/download/v{{ hcloud.cli_version }}/hcloud-linux-amd64-v{{ hcloud.cli_version }}.tar.gz"
+    dest: "/tmp/"
     remote_src: yes
   delegate_to: localhost
 
 - name: Install prerequisites
   file:
-    src: "/tmp/hcloud/bin/hcloud"
+    src: "/tmp/hcloud-linux-amd64-v{{ hcloud.cli_version }}/bin/hcloud"
     dest: "{{ hcloud_path }}"
     remote_src: yes
+  delegate_to: localhost
 
 - name: Check if volume exists
   shell: "{{ hcloud_path }}hcloud volume list -o columns=name | grep {{ inventory_hostname }}-docker"

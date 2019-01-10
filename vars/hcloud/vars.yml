@@ -1,6 +1,7 @@
 ---
 
 hcloud:
+  cli_version: 1.10.0
   token: "{{ vault_hcloud_token }}"
   image: ubuntu-18.04
   server_type: cx21

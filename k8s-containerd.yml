@@ -5,10 +5,10 @@
 - import_playbook: inventory.yml
 
 - import_playbook: provision_hcloud.yml
-  when: 'provisioner | default() == "hcloud"'
+  when: 'provisioner == "hcloud"'
 
 - import_playbook: provision_vsphere.yml
-  when: 'provisioner | default() == "vsphere"'
+  when: 'provisioner == "vsphere"'
 
 - name: Prepare all nodes
   hosts: k8s

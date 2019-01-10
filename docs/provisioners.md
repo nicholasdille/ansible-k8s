@@ -22,6 +22,12 @@ provisioning:
 
 Additional configuration options are available for the supported provisioners.
 
+To select a supported provisioner, you must provide an additional parameter when calling `ansible-playbook`:
+
+```bash
+ansible-playbook -e provisioner=hcloud k8s-docker.yml
+```
+
 ## Supported provisioners
 
 ### Hetzner Cloud

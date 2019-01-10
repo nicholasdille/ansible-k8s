@@ -27,5 +27,5 @@ See [documentation](docs)
 1. Configure the deployment
     - Edit `vars/global.yml`
 
-1. Run a playbook for a [supported runtime](docs/runtimes.md)
-    - `ansible-playbook k8s-docker.yml`
+1. Run a playbook for a [supported runtime](docs/runtimes.md) with a [supported provisioner](docs/provisioners.md):
+    - `ansible-playbook -e provisioner=hcloud k8s-docker.yml`

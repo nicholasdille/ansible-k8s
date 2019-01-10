@@ -92,6 +92,6 @@
   tasks:
     - name: Create volumes
       include_tasks: provision_hcloud_volume.yml
-      when: 'hcloud.use_volumes'
+      when: 'provisioning.use_volumes'
   tags:
     - provision
