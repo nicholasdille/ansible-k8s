@@ -1,4 +1,4 @@
-# Role `docker`
+# Role `k8s-node-prepare`
 
 XXX
 

@@ -1,4 +1,4 @@
-# Role `docker`
+# Role `cni`
 
 XXX
 

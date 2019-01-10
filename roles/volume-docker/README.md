@@ -2,4 +2,4 @@
 
 XXX
 
-See also the big [picture](../../docs).
+See also the big [picture](../../docs/roles.md).

@@ -1,6 +1,8 @@
 # Bootstrapping of Kubernetes using `kubeadm` and Ansible
 
-According to [stacked control planes with `kubeadm`](https://kubernetes.io/docs/setup/independent/high-availability/#stacked-control-plane-and-etcd-nodes)
+... according to [stacked control planes with `kubeadm`](https://kubernetes.io/docs/setup/independent/high-availability/#stacked-control-plane-and-etcd-nodes)
+
+See [documentation](docs)
 
 ## Tested components
 
@@ -13,80 +15,6 @@ According to [stacked control planes with `kubeadm`](https://kubernetes.io/docs/
 - containerd 1.2.1
 - Kubernetes 1.13.0, 1.13.1
 
-## Usage
+## Quickstart
 
-The follow inventory groups are required:
-
-- initial master
-- additional masters
-- workers
-
-The deployment is performed in the following phases:
-
-1. Prepare all nodes
-    Run on initial master, additional masters and workers
-
-    a. Install runtime (see below)
-    b. Role `k8-node-prepare`
-    c. (Optional) Prepare runtime (see below)
-
-2. Initialize cluster
-    Run on initial master
-
-    a. Role `k8s-cluster-init`
-    b. Role `k8s-cni-weave`
-
-3. Deploy additional masters
-    Run on additional masters
-
-    a. Role `k8s-controller-join`
-
-4. Configure control plane
-    Run on initial master and additional masters
-
-    a. Role `k8s-controller-finish`
-    b. Role `k8s-controller-all-nodeports`
-
-5. Deploy workers
-    Run on workers
-
-    a. Role `k8s-worker-join`
-
-## Runtime
-
-Supported runtimes:
-
-- Docker
-- containerd
-
-### Docker
-
-Run role `docker`
-
-Set variable `docker.version` to `18.06.*`
-
-See playbook `k8s-docker.yml`
-
-### containerd
-
-Run roles `runc`, `cni`, `containerd`
-
-Prepare run time by running `k8s-cri-containerd`
-
-See playbook `k8s-containerd.yml`
-
-## Playbooks
-
-`prepare.yml` prepares the local environment to work with the Hetzner Cloud
-
-`provision.yml` provisions VM in the Hetzner Cloud and prepares them for usage
-
-`k8s-docker.yml` creates a cluster with Docker as runtime
-
-`k8s-containerd.yml` creates a cluster with containerd as runtime
-
-The playbooks `k8s-*.yml` rely on a dynamic inventory for the Hetzner Cloud. The should be called as shown in the following snippet:
-
-```bash
-HCLOUD_TOKEN=$(ansible-vault view group_vars/all/vault | grep vault_hcloud_token | cut -d' ' -f2) ansible-playbook -i library/hcloud_inventory k8s-docker.yml
-```
+XXX

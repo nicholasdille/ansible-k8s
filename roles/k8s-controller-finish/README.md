@@ -1,4 +1,4 @@
-# Role `docker`
+# Role `k8s-controller-finish`
 
 XXX
 

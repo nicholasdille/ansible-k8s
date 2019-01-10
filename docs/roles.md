@@ -4,36 +4,36 @@ XXX
 
 ```
      /---------------\              /------\
-     | volume-docker |              | runc |
+     | [volume-docker](#volume-docker) |              | [runc](#runc) |
      \---------------/              \------/
              |                          |
              v                          v
         /--------\                   /-----\
-        | docker |                   | cni |
+        | [docker](#docker) |                   | [cni](#cni) |
         \--------/                   \-----/
              |                          |
              |                          v
              |                   /------------\
-             |                   | containerd |
+             |                   | [containerd](#containerd) |
              |                   \------------/
              v                          |
      /------------------\               |
-     | k8s-node-prepare | <-------------/
+     | [k8s-node-prepare](#k8s-node-prepare) | <-------------/
      \------------------/
               |
               v
      /------------------\             /---------------\
-     | k8s-cluster-init | ----------> | k8s-cni-weave |
+     | [k8s-cluster-init](#k8s-cluster-init) | ----------> | [k8s-cni-weave](#k8s-cni-weave) |
      \------------------/             \---------------/
                                            |
                                            v
    /-----------------------\       /---------------------\
-   | k8s-controller-finish | <---- | k8s-controller-join |
+   | [k8s-controller-finish](#k8s-controller-finish) | <---- | [k8s-controller-join](#k8s-controller-join) |
    \-----------------------/       \---------------------/
               |
               v
 /------------------------------\     /-----------------\
-| k8s-controller-all-nodeports | --> | k8s-worker-join |
+| [k8s-controller-all-nodeports](#k8s-controller-all-nodeports) | --> | [k8s-worker-join](#k8s-worker-join) |
 \------------------------------/     \-----------------/
 ```
 
@@ -43,48 +43,48 @@ Prepares an unused block device and mounts it to `/var/lib/docker`. See [here](.
 
 ## docker
 
-Installs Docker CE.
+Installs [Docker CE](https://docker.com). See [here](../roles/docker) for details. See also [runtimes](runtimes.md).
 
 ## runc
 
-XXX
+Installs [runc](https://github.com/opencontainers/runc). See [here](../roles/runc) for details.
 
 ## cni
 
-XXX
+Installs [CNI](https://github.com/containernetworking/cni). See [here](../roles/cni) for details.
 
 ## containerd
 
-XXX
+Installs [containerd](https://github.com/containerd/containerd). See [here](../roles/containerd) for details. See also [runtimes](runtimes.md).
 
 ## k8s-node-prepare
 
-XXX
+Prepares the node for [Kubernetes](https://kubernetes.io). See [here](../roles/k8s-node-prepare) for details.
 
 ## k8s-cluster-init
 
-XXX
+Bootstraps the first node in a cluster. See [here](../roles/k8s-cluster-init) for details.
 
 ## k8s-cni-weave
 
-XXX
+Installs [Weave Net](https://www.weave.works/docs/net/latest/overview/) for pod networking. See [here](../roles/k8s-cni-weave) for details.
 
 ## k8s-controller-join
 
-XXX
+Joins more controllers to the cluster. See [here](../roles/k8s-controller-join) for details.
 
 ## k8s-controller-finish
 
-XXX
+Finishes the configuration as soon as the control plane is up. See [here](../roles/k8s-controller-finish) for details.
 
 ## k8s-controller-all-nodeports
 
-XXX
+Configures controllers to allow all node ports. See [here](../roles/k8s-controller-all-nodeports) for details.
 
 ## k8s-controller-untaint
 
-XXX
+Optionally untaints controllers to schedule pods. See [here](../roles/k8s-controller-untaint) for details.
 
 ## k8s-worker-join
 
-XXX
+Joins workers to the cluster. See [here](../roles/k8s-worker-join) for details.
