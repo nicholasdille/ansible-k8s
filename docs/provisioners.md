@@ -8,7 +8,7 @@ The provisioning process is split into two phases:
 
 ## Configuration
 
-XXX inventory
+The inventory will be created dynamically based on your configuration:
 
 ```ansible
 provisioning:
@@ -32,22 +32,33 @@ ansible-playbook -e provisioner=hcloud k8s-docker.yml
 
 ### Hetzner Cloud
 
-XXX
+Provision resources in the [Hetzner Cloud](https://www.hetzner.com/cloud)
 
 ```ansible
 hcloud:
+  image: ubuntu-18.04
+  server_type: cx21
+  location: nbg1
+  ssh_keys
+    - 123456
   token: XXX
+  cli_version: 1.10.0
   use_volumes: false
 ```
 
-- `hcloud.token`: XXX
-- `hcloud.use_volumes`: XXX (reference volume-docker)
+- `hcloud.image`: which image to use
+- `hcloud.server_type`: which server type to use
+- `hcloud.location`: which location to use
+- `hcloud.ssh_keys`: which SSH keys to inject
+- `hcloud.cli_version`: which version of the CLI to install and use
+- `hcloud.token`: which token to use
+- `hcloud.use_volumes`: whether to create volumes (see role [volume-docker](../roles/volume-docker))
 
 The default settings are located in [`vars/hcloud/vars.yml`](../vars/hcloud/vars.yml) with sensitive data stored in Ansible vault [`vars/hcloud/vault.yml`](../vars/hcloud/vault.yml).
 
 ### VMware vSphere
 
-XXX
+Provision resource in your local virtualization infrastructure
 
 ```ansible
 vsphere:
@@ -63,15 +74,15 @@ vsphere:
   domain: example.com
 ```
 
-- `vsphere.hostname`: XXX
-- `vsphere.username`: XXX
-- `vsphere.password`: XXX
-- `vsphere.datacenter`: XXX
-- `vsphere.cluster`: XXX
-- `vsphere.folder`: XXX
-- `vsphere.resource_pool`: XXX
-- `vsphere.template`: XXX
-- `vsphere.network`: XXX
-- `vsphere.domain`: XXX
+- `vsphere.hostname`: Hostname of the vCenter server to use
+- `vsphere.username`: Username for authenticating against vCenter
+- `vsphere.password`: Password for the above user
+- `vsphere.datacenter`: Datacenter to use
+- `vsphere.cluster`: Cluster to use
+- `vsphere.folder`: Folder to save the new VMs in
+- `vsphere.resource_pool`: Resource pool to assign new VMs to
+- `vsphere.template`: Template to base new VMs on
+- `vsphere.network`: Network to attach new VMs to
+- `vsphere.domain`: Domain for DNS resolution
 
 The default settings are located in [`vars/vsphere/vars.yml`](../vars/vsphere/vars.yml) with sensitive data stored in Ansible vault [`vars/vsphere/vault.yml`](../vars/vsphere/vault.yml).
