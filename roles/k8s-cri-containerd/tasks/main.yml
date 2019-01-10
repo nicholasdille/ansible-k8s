@@ -1,20 +1,10 @@
 ---
 
-- name: Configure kubelet to use containerd
-  patch:
-    src: 10-kubeadm.conf.patch
-    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+- name: Check for containerd socket
+  stat:
+    path: /var/run/containerd/containerd.sock
   become: yes
+  register: containerd_sock
 
-- name: Add containerd configuration to kubelet
-  copy:
-    src: 0-containerd.conf
-    dest: /etc/systemd/system/kubelet.service.d
-    owner: root
-    group: root
-  become: yes
-
-- name: Reload daemon configuration
-  systemd:
-    daemon_reload: yes
-  become: yes
+- include: cri-containerd.yml
+  when: 'containerd_sock.stat.exists and containerd_sock.stat.issock'
