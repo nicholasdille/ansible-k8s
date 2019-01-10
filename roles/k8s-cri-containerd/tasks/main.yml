@@ -6,5 +6,5 @@
   become: yes
   register: containerd_sock
 
-- include: cri-containerd.yml
+- include: containerd.yml
   when: 'containerd_sock.stat.exists and containerd_sock.stat.issock'
