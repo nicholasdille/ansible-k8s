@@ -4,36 +4,36 @@ The deployment of the Kubernetes cluster is separated into multiple roles. The r
 
 ```
      /---------------\              /------\
-     | [volume-docker](#volume-docker) |              | [runc](#runc) |
+     | volume-docker |              | runc |
      \---------------/              \------/
              |                          |
              v                          v
         /--------\                   /-----\
-        | [docker](#docker) |                   | [cni](#cni) |
+        | docker |                   | cni |
         \--------/                   \-----/
              |                          |
              |                          v
              |                   /------------\
-             |                   | [containerd](#containerd) |
+             |                   | containerd |
              |                   \------------/
              v                          |
      /------------------\               |
-     | [k8s-node-prepare](#k8s-node-prepare) | <-------------/
+     | k8s-node-prepare | <-------------/
      \------------------/
               |
               v
      /------------------\             /---------------\
-     | [k8s-cluster-init](#k8s-cluster-init) | ----------> | [k8s-cni-weave](#k8s-cni-weave) |
+     | k8s-cluster-init | ----------> | k8s-cni-weave |
      \------------------/             \---------------/
                                            |
                                            v
    /-----------------------\       /---------------------\
-   | [k8s-controller-finish](#k8s-controller-finish) | <---- | [k8s-controller-join](#k8s-controller-join) |
+   | k8s-controller-finish | <---- | k8s-controller-join |
    \-----------------------/       \---------------------/
               |
               v
 /------------------------------\     /-----------------\
-| [k8s-controller-all-nodeports](#k8s-controller-all-nodeports) | --> | [k8s-worker-join](#k8s-worker-join) |
+| k8s-controller-all-nodeports | --> | k8s-worker-join |
 \------------------------------/     \-----------------/
 ```
 
