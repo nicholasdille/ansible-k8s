@@ -8,5 +8,3 @@ hcloud:
   location: nbg1
   ssh_keys:
     - 209622
-  ssh_user: root
-  ssh_private_key: ~/id_rsa_hetzner
