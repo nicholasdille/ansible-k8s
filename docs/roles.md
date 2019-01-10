@@ -1,6 +1,6 @@
 # Roles
 
-XXX
+The deployment of the Kubernetes cluster is separated into multiple roles. The roles do not use dependencies but must be applied in the correct order to minimize the number of skipped tasks.
 
 ```
      /---------------\              /------\
