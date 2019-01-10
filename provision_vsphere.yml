@@ -9,16 +9,6 @@
           - PyVmomi
       become: yes
 
-- name: Creating temporary inventory for parallel deployment
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - add_host:
-        name: "{{ item }}"
-        groups:
-          - k8s
-      with_items: "{{ vm_list }}"
-
 - name: Provision nodes
   hosts: k8s
   gather_facts: no
@@ -63,8 +53,6 @@
     - name: Storing connection data
       set_fact:
         ansible_host: "{{ node.instance.hw_eth0.ipaddresses.0 }}"
-        ansible_user: rdadm
-        ansible_ssh_private_key_file: "~/id_rsa_rdadm"
       delegate_to: localhost
   tags:
     - provision
@@ -103,7 +91,7 @@
       raw: "apt-get update && apt-get -y upgrade"
       become: yes
     - name: Install Python
-      raw: "apt-get -y install python-pip jq"
+      raw: "apt-get -y install python-pip"
       become: yes
   tags:
     - provision

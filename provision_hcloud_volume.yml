@@ -1,5 +1,20 @@
 ---
 
+- name: Download and deflate prerequisites
+  vars:
+    hcloud_version: 1.10.0
+  unarchive:
+    src: "https://github.com/hetznercloud/cli/releases/download/v{{ hcloud_version }}/hcloud-linux-amd64-v{{ hcloud_version }}.tar.gz"
+    dest: "/tmp/hcloud/"
+    remote_src: yes
+  delegate_to: localhost
+
+- name: Install prerequisites
+  file:
+    src: "/tmp/hcloud/bin/hcloud"
+    dest: "{{ hcloud_path }}"
+    remote_src: yes
+
 - name: Check if volume exists
   shell: "{{ hcloud_path }}hcloud volume list -o columns=name | grep {{ inventory_hostname }}-docker"
   args:
@@ -7,13 +22,16 @@
   ignore_errors: yes
   register: volume_exists
   delegate_to: localhost
+
 - debug:
     var: volume_exists
     verbosity: 1
+
 - name: Create volume
   shell: "{{ hcloud_path }}hcloud volume create --size 20 --name {{ inventory_hostname }}-docker --location {{ hcloud.location }}"
   delegate_to: localhost
   when: 'volume_exists is defined and volume_exists.failed'
+
 - name: Check if volume is attached
   shell: "{{ hcloud_path }}hcloud volume list -o columns=name,server | grep {{ inventory_hostname }}-docker | grep {{ hcloud_server_id }}"
   args:
@@ -21,9 +39,11 @@
   ignore_errors: yes
   register: volume_attached
   delegate_to: localhost
+
 - debug:
     var: volume_attached
     verbosity: 1
+
 - name: Attach volume
   shell: "{{ hcloud_path }}hcloud volume attach --server {{ inventory_hostname }} {{ inventory_hostname }}-docker"
   args:

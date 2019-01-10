@@ -21,7 +21,10 @@
       add_host:
         name: "{{ item }}"
         groups:
+          - k8s
           - controller
+        ansible_user: "{{ provisioning.ssh_user }}"
+        ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ controller_list }}"
     - name: Create group for first controller
       add_host:
@@ -40,6 +43,6 @@
         groups:
           - k8s
           - worker
-        ansible_user: "{{ ssh_user }}"
-        ansible_ssh_private_key_file: "{{ ssh_private_key }}"
+        ansible_user: "{{ provisioning.ssh_user }}"
+        ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ worker_list }}"

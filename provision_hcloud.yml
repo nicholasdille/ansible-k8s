@@ -31,6 +31,12 @@
         location: "{{ hcloud.location }}"
         ssh_keys: "{{ hcloud.ssh_keys }}"
         token: "{{ hcloud.token }}"
+      register: nodes
+    - add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.public_ipv4 }}"
+        hcloud_server_id: "{{ item.id }}"
+      with_items: "{{ nodes.servers }}"
   tags:
     - provision
 

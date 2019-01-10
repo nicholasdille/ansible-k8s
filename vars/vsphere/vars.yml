@@ -11,4 +11,5 @@ vsphere:
   template: template_xenial_rancher
   network: LAN Build
   domain: "{{ vault_vsphere_domain }}"
-  ssh_private_key: ~/id_rsa_rdadm
+  instance_user: rdadm
+  instance_ssh_private_key: ~/id_rsa_rdadm
