@@ -32,4 +32,5 @@ XXX
     - role: cni
       cni:
         config: [bridge]
+        bridge_network: 10.10.0.0/16
 ```
