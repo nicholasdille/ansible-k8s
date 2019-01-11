@@ -15,9 +15,6 @@
   vars_files:
     - vars/global.yml
   roles:
-    - role: cni
-      cni:
-        config: [bridge]
     - role: containerd
     - role: k8s-node-prepare
     - role: k8s-cri-containerd
