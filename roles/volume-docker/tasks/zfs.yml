@@ -8,7 +8,7 @@
   become: yes
 
 - name: Determine device
-  shell: lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == "disk") | select(.children == null) | .name'
+  shell: lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == "disk") | select(.rm == "0") | select(.children == null) | .name'
   args:
     executable: /bin/bash
   become: yes

@@ -1,7 +1,7 @@
 ---
 
 - name: Find device
-  shell: "lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == \"disk\") | select(.children == null) | .name'"
+  shell: lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == "disk") | select(.rm == "0") | select(.children == null) | .name'
   args:
     executable: /bin/bash
   register: device
@@ -10,13 +10,13 @@
     msg: Using device {{ device.stdout }}
 
 - name: Create partition
-  shell: "echo -e 'n\np\n1\n\n\nw' | fdisk /dev/{{ device.stdout_lines.0 }}"
+  shell: echo -e 'n\np\n1\n\n\nw' | fdisk /dev/{{ device.stdout_lines.0 }}
   args:
     executable: /bin/bash
   when: 'device is defined and not device.failed and device.stdout_lines | length == 1'
 
 - name: Find partition
-  shell: "lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .name'"
+  shell: lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .name'
   args:
     executable: /bin/bash
   register: partition
@@ -25,7 +25,7 @@
     msg: Using partition {{ partition.stdout }}
 
 - name: Check for existing filesystem
-  shell: "lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .fstype'"
+  shell: lsblk --fs --json | jq --raw-output '.blockdevices | .[] | select(.children != null) | .children | .[] | select(.mountpoint == null) | .fstype'
   args:
     executable: /bin/bash
   register: fs
