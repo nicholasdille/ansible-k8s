@@ -14,9 +14,6 @@
       set_fact:
         worker_list: "{{ worker_list | default([]) }} + [ '{{ provisioning.worker.prefix }}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, provisioning.worker.count + 1, 1) | list }}"
-    - name: Creating list of workers
-      set_fact:
-        vm_list: "{{ controller_list + worker_list }}"
     - name: Create group for controller
       add_host:
         name: "{{ item }}"
