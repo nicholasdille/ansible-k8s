@@ -3,18 +3,18 @@
 
 provisioning:
   controller:
-    prefix: vl-k8s-cp-
+    prefix: vl-k8sbld-c-
     count: 3
   worker:
-    prefix: vl-k8s-wk-
+    prefix: vl-k8sbld-w-
     count: 2
   ssh_user: rdadm
   ssh_private_key: "~/id_rsa_rdadm"
   use_volumes: true
 
 dns:
-  zone: dille.io
-  record: k8s
+  zone: haufedev.systems
+  record: build.k8s
 
 docker:
   version: 18.06.*
