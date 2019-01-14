@@ -9,8 +9,8 @@
           - PyVmomi
       become: yes
 
-- name: Provision nodes
-  hosts: k8s
+- name: Provision controller
+  hosts: controller
   gather_facts: no
   vars_files:
     - vars/vsphere/vars.yml
@@ -28,7 +28,55 @@
         resource_pool: "{{ vsphere.resource_pool }}"
         name: "{{ inventory_hostname }}"
         state: poweredon
-        template: "{{ vsphere.template }}"
+        template: "{{ vsphere.controller_template }}"
+        guest_id: ubuntu64Guest
+        networks:
+          - name: "{{ vsphere.network }}"
+            start_connected: true
+        wait_for_ip_address: true
+        customization:
+          domain: "{{ vsphere.domain }}"
+          dns_suffix:
+            - "{{ vsphere.domain }}"
+      delegate_to: localhost
+    - name: Collecting data about existing VMs
+      vmware_guest_facts:
+        hostname: "{{ vsphere.hostname }}"
+        username: "{{ vsphere.username }}"
+        password: "{{ vsphere.password }}"
+        validate_certs: no
+        datacenter: "{{ vsphere.datacenter }}"
+        folder: "{{ vsphere.folder }}"
+        name: "{{ inventory_hostname }}"
+      delegate_to: localhost
+      register: node
+    - name: Storing connection data
+      set_fact:
+        ansible_host: "{{ node.instance.hw_eth0.ipaddresses.0 }}"
+      delegate_to: localhost
+  tags:
+    - provision
+
+- name: Provision worker
+  hosts: worker
+  gather_facts: no
+  vars_files:
+    - vars/vsphere/vars.yml
+    - vars/vsphere/vault.yml
+  tasks:
+    - name: Creating new VMs
+      vmware_guest:
+        hostname: "{{ vsphere.hostname }}"
+        username: "{{ vsphere.username }}"
+        password: "{{ vsphere.password }}"
+        validate_certs: no
+        datacenter: "{{ vsphere.datacenter }}"
+        cluster: "{{ vsphere.cluster }}"
+        folder: "{{ vsphere.folder }}"
+        resource_pool: "{{ vsphere.resource_pool }}"
+        name: "{{ inventory_hostname }}"
+        state: poweredon
+        template: "{{ vsphere.worker_template }}"
         guest_id: ubuntu64Guest
         networks:
           - name: "{{ vsphere.network }}"
