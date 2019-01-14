@@ -3,13 +3,13 @@
 
 provisioning:
   controller:
-    prefix: controller
+    prefix: vl-k8s-cp-
     count: 3
   worker:
-    prefix: worker
+    prefix: vl-k8s-wk-
     count: 2
-  ssh_user: root
-  ssh_private_key: "~/id_rsa_hetzner"
+  ssh_user: rdadm
+  ssh_private_key: "~/id_rsa_rdadm"
   use_volumes: true
 
 dns:
