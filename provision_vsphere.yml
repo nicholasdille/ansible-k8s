@@ -4,7 +4,7 @@
   hosts: localhost
   gather_facts: no
   tasks:
-    - apt:
+    - pip:
         name:
           - PyVmomi
       become: yes
