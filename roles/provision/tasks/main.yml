@@ -1,0 +1,33 @@
+---
+
+- hcloud_server:
+    name: "{{ inventory_hostname }}"
+    image: "{{ hcloud.image }}"
+    server_type: "{{ hcloud[role].server_type }}"
+    location: "{{ hcloud.location }}"
+    ssh_keys: "{{ hcloud.ssh_keys }}"
+    token: "{{ hcloud.token }}"
+  register: node
+  delegate_to: localhost
+
+- set_fact:
+    ansible_host: "{{ item.public_ipv4 }}"
+    hcloud_server_id: "{{ item.id }}"
+  with_items: "{{ node.servers }}"
+  delegate_to: localhost
+
+- wait_for:
+    host: "{{ ansible_host }}"
+    port: 22
+    connect_timeout: 5
+    timeout: 60
+  delegate_to: localhost
+
+- name: Making sure no other apt-get task is running
+  raw: "while lsof /var/lib/apt/lists/lock || lsof /var/lib/dpkg/lock-frontend; do sleep 5; done"
+
+- name: Install updates
+  raw: "apt-get update && apt-get -y upgrade"
+
+- name: Install Python
+  raw: "apt-get -y install python-pip jq"

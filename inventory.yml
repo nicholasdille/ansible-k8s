@@ -43,3 +43,17 @@
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ worker_list }}"
+
+- name: prepare
+  hosts: controller
+  gather_facts: no
+  tasks:
+    - set_fact:
+        role: controller
+
+- name: prepare 2
+  hosts: worker
+  gather_facts: no
+  tasks:
+    - set_fact:
+        role: worker
