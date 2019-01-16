@@ -1,12 +1,12 @@
 # Role `k8s-cluster-init`
 
-XXX
+This role bootstraps the first controller and created a new Kubernetes cluster. It requires that the role [k8s-node-prepare](../k8s-node-prepare) was applied.
 
 See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+The role relies on a load balancer which points to one or more controllers in the Kubernetes cluster. When this role is applied, `k8s.load_balancer` should only resolve to the first node.
 
 ```ansible
 cri:
@@ -19,7 +19,7 @@ k8s:
 
 ## Usage
 
-XXX
+The following play, creates the cluster on the first controller and defines all required parameters (`k8s.load_balancer` as well as `k8s.pod_network`).
 
 ```ansible
 - name: Initialize cluster

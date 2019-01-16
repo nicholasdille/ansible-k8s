@@ -10,7 +10,7 @@ This role does not require any configuration.
 
 ## Usage
 
-XXX
+The following play finished the setup of a Kubernetes cluster.
 
 ```ansible
 - name: Configure control planes

@@ -1,12 +1,12 @@
 # Role `cni`
 
-XXX
+Installs the Container Network Interface (CNI) binaries. This includes the plugins.
 
 See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+The configuration includes options to configure the CNI plugins.
 
 ```ansible
 cni:
@@ -19,11 +19,11 @@ cni:
   bridge_network: null
 ```
 
-XXX `bridge_network` must be set
+If `cni.config` contains `bridge`, `bridge_network` must be set.
 
 ## Usage
 
-XXX
+The following play installs the CNI binaries including plugins and installs a configuration for the bridge plugin.
 
 ```ansible
 - name: Prepare all nodes

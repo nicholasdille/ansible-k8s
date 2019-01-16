@@ -1,12 +1,12 @@
 # Role `k8s-node-prepare`
 
-This role takes care of preparing a node for running Kubernetes. It requires Docker to be installed first (see role [docker](../docker)).
+This role takes care of preparing a node for running Kubernetes. It requires [docker](../docker) or [containerd](../containerd) to be installed first.
 
 See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+Nonre of the following variables need to be modified. If you require a specific version of Kubernetes, you can set `k8s.version` overriding the preset to use the latest version.
 
 ```ansible
 cri:
@@ -29,7 +29,7 @@ k8s:
 
 ## Usage
 
-XXX
+The following play prepares nodes for Kubernetes.
 
 ```ansible
 - name: Prepare all nodes

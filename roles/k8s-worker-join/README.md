@@ -6,7 +6,7 @@ See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+Just like cluster initialization (role [k8s-cluster-init](../k8s-cluster-init)) and joining controllers (role [k8s-controller-join](../k8s-controller-join)), joining worker nodes requires API access to an controller in the cluster. You need to set `k8s.load_balancer`.
 
 ```ansible
 k8s:
@@ -15,7 +15,7 @@ k8s:
 
 ## Usage
 
-XXX
+The following play joins workers (group `worker`) to an existing cluster at `k8s.example.com` using a specific controller (variable `controller`) for token creation.
 
 ```ansible
 - name: Deploy workers

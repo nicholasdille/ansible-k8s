@@ -6,7 +6,7 @@ See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+It is not necessary to configure any values for normal operation.
 
 ```ansible
 runc:
@@ -15,7 +15,7 @@ runc:
 
 ## Usage
 
-XXX
+The following play installs runc:
 
 ```ansible
 - name: Install runc

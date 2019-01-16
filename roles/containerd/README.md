@@ -1,12 +1,12 @@
 # Role `containerd`
 
-XXX
+Installs containerd as an alternative to [Docker](../docker). It automatically installs its dependencies [runc](../runc) and [cni](../cni).
 
 See also the big [picture](../../docs/roles.md).
 
 ## Configuration
 
-XXX
+The role does not require any additional configuration.
 
 ```ansible
 containerd:
@@ -15,7 +15,7 @@ containerd:
 
 ## Usage
 
-XXX
+The following play installs containerd.
 
 ```ansible
 - name: Prepare all nodes

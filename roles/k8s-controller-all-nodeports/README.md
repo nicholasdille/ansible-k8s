@@ -10,7 +10,7 @@ This role does not require any configuration.
 
 ## Usage
 
-XXX
+The following play allows publishing on all node ports.
 
 ```ansible
 - name: Configure control planes
