@@ -1,10 +1,11 @@
 ---
 
 hcloud:
-  cli_version: 1.10.0
+  cli_version: 1.11.0
   token: "{{ vault_hcloud_token }}"
   image: ubuntu-18.04
-  server_type: cx21
+  controller_server_type: cx21
+  worker_server_type: cx31
   location: nbg1
   ssh_keys:
     - 209622

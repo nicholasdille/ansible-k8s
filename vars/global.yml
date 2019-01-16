@@ -8,8 +8,8 @@ provisioning:
   worker:
     prefix: vl-k8sbld-w-
     count: 2
-  ssh_user: rdadm
-  ssh_private_key: "~/id_rsa_rdadm"
+  ssh_user: root
+  ssh_private_key: "~/id_rsa_hetzner"
   use_volumes: true
 
 dns:
