@@ -4,17 +4,22 @@
 
 - import_playbook: inventory.yml
 
-- import_playbook: provision_hcloud.yml
-  when: 'provisioner == "hcloud"'
-
-- import_playbook: provision_vsphere.yml
-  when: 'provisioner == "vsphere"'
-
 - name: Prepare all nodes
   hosts: k8s
   vars_files:
     - vars/global.yml
   roles:
+
+    - role: provision-hcloud
+      hcloud:
+        use_volumes: "{{ provisioning.use_volumes }}"
+      when: 'provisioning.provider == "hcloud"'
+
+    - role: provision-vsphere
+      when: 'provisioning.provider == "vsphere"'
+
+    - role: provision-ssh-config
+
     - role: containerd
     - role: k8s-node-prepare
     - role: k8s-cri-containerd

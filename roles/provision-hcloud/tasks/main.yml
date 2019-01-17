@@ -1,0 +1,8 @@
+---
+
+# Check for hcloud
+
+- include: servers.yml
+
+- include_tasks: volumes.yml
+  when: 'hcloud.use_volumes and role == "worker"'

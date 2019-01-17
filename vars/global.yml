@@ -1,5 +1,8 @@
 ---
 
+hcloud:
+  cli_version: 1.11.0
+  cli_path: ~/.local/bin/
 
 provisioning:
   controller:

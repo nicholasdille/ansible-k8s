@@ -6,54 +6,48 @@
   vars_files:
     - vars/global.yml
   tasks:
+
     - name: Creating list of controllers
       set_fact:
         controller_list: "{{ controller_list | default([]) }} + [ '{{ provisioning.controller.prefix }}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, provisioning.controller.count + 1, 1) | list }}"
+
     - name: Selecting first controller
       set_fact:
         worker_list: "{{ worker_list | default([]) }} + [ '{{ provisioning.worker.prefix }}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, provisioning.worker.count + 1, 1) | list }}"
+
     - name: Create group for controller
       add_host:
         name: "{{ item }}"
         groups:
           - k8s
           - controller
+        role: controller
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ controller_list }}"
+
     - name: Create group for first controller
       add_host:
         name: "{{ controller_list | sort | first }}"
         groups:
           - first_controller
+
     - name: Create group for additional controller
       add_host:
         name: "{{ item }}"
         groups:
           - additional_controllers
       with_items: "{{ controller_list | difference(groups['first_controller']) }}"
+
     - name: Create group for worker
       add_host:
         name: "{{ item }}"
         groups:
           - k8s
           - worker
+        role: worker
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ worker_list }}"
-
-- name: prepare
-  hosts: controller
-  gather_facts: no
-  tasks:
-    - set_fact:
-        role: controller
-
-- name: prepare 2
-  hosts: worker
-  gather_facts: no
-  tasks:
-    - set_fact:
-        role: worker

@@ -4,7 +4,28 @@
   hosts: localhost
   gather_facts: no
   tasks:
+
     - name: Check Ansible version
       assert:
         that: 'ansible_version.full is version_compare("2.7.4", ">=")'
         msg: 'Broken set_fact (https://www.jeffgeerling.com/blog/2017/adding-strings-array-ansible)'
+
+    - name: Install prerequisites for vSphere
+      pip:
+        name:
+          - PyVmomi
+      become: yes
+
+    - name: Download and deflate prerequisites
+      unarchive:
+        src: "https://github.com/hetznercloud/cli/releases/download/v{{ hcloud.cli_version }}/hcloud-linux-amd64-v{{ hcloud.cli_version }}.tar.gz"
+        dest: "/tmp/"
+        remote_src: yes
+      delegate_to: localhost
+    
+    - name: Install prerequisites
+      file:
+        src: "/tmp/hcloud-linux-amd64-v{{ hcloud.cli_version }}/bin/hcloud"
+        dest: "{{ hcloud.cli_path }}"
+        remote_src: yes
+      delegate_to: localhost

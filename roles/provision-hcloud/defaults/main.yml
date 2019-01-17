@@ -1,0 +1,14 @@
+---
+
+hcloud:
+  token: null
+  image: ubuntu-18.04
+  location: nbg1
+  ssh_keys:
+    - 209622
+
+  controller:
+    server_type: cx21
+
+  worker:
+    server_type: cx31
