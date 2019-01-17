@@ -3,3 +3,7 @@
 traefik:
   acme:
     email: null
+    challenge: dns
+  ui:
+    username: null
+    password: null
