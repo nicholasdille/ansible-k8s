@@ -1,0 +1,35 @@
+---
+
+- template:
+    src: "{{ traefik.acme.challenge }}.yml"
+    dest: cluster/
+  run_once: yes
+  delegate_to: localhost
+
+- command: "kubectl apply -f cluster/{{ traefik.acme.challenge }}.yml"
+  run_once: yes
+  delegate_to: localhost
+
+- copy:
+    src: traefik.yml
+    dest: cluster/
+  run_once: yes
+  delegate_to: localhost
+
+- command: "kubectl apply -f cluster/traefik.yml"
+  run_once: yes
+  delegate_to: localhost
+
+- command: "kubectl --namespace kube-system create secret generic traefik-auth --from-file <(htpasswd -n {{ traefik.ui.username }} {{ traefik.ui.password }})"
+  run_once: yes
+  delegate_to: localhost
+
+- copy:
+    src: traefik-ui.yml
+    dest: cluster/
+  run_once: yes
+  delegate_to: localhost
+
+- command: "kubectl apply -f cluster/traefik-ui.yml"
+  run_once: yes
+  delegate_to: localhost

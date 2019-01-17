@@ -1,0 +1,5 @@
+---
+
+traefik:
+  acme:
+    email: null
