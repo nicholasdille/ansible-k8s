@@ -20,9 +20,18 @@
 
     - role: provision-ssh-config
 
+    - role: volume-docker
+      when: 'runtime == "docker" and provisioning.use_volumes'
+    - role: docker
+      when: 'runtime == "docker"'
+
     - role: containerd
+      when: 'runtime == "containerd"'
+
     - role: k8s-node-prepare
+
     - role: k8s-cri-containerd
+      when: 'runtime == "containerd"'
   tags:
     - k8s-node-prepare
 

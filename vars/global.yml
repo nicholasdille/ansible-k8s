@@ -15,6 +15,9 @@ provisioning:
   ssh_private_key: "~/id_rsa_hetzner"
   use_volumes: true
 
+# valid values: docker, containerd
+runtime: docker
+
 dns:
   zone: haufedev.systems
   record: build.k8s
