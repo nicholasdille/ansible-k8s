@@ -4,10 +4,13 @@
 
 - import_playbook: inventory.yml
 
-- name: Prepare all nodes
+- name: Provision nodes
   hosts: k8s
+  gather_facts: no
   vars_files:
     - vars/global.yml
+    - vars/hcloud/vault.yml
+    - vars/hcloud/vars.yml
   roles:
 
     - role: provision-hcloud
@@ -19,6 +22,12 @@
       when: 'provisioning.provider == "vsphere"'
 
     - role: provision-ssh-config
+
+- name: Prepare nodes
+  hosts: k8s
+  vars_files:
+    - vars/global.yml
+  roles:
 
     - role: volume-docker
       when: 'runtime == "docker" and provisioning.use_volumes'
@@ -32,7 +41,5 @@
 
     - role: k8s-cri-containerd
       when: 'runtime == "containerd"'
-  tags:
-    - k8s-node-prepare
 
 - import_playbook: cluster.yml

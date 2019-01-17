@@ -5,6 +5,7 @@ hcloud:
   cli_path: ~/.local/bin/
 
 provisioning:
+  provider: hcloud
   controller:
     prefix: vl-k8sbld-c-
     count: 3
@@ -19,8 +20,8 @@ provisioning:
 runtime: docker
 
 dns:
-  zone: haufedev.systems
-  record: build.k8s
+  zone: dille.io
+  record: k8s
 
 docker:
   version: 18.06.*
