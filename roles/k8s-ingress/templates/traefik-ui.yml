@@ -22,7 +22,7 @@ metadata:
     ingress.kubernetes.io/auth-secret: "traefik-auth"
 spec:
   rules:
-  - host: traefik.${DNS_DOMAIN}
+  - host: "traefik.{{ traefik.acme.domain }}"
     http:
       paths:
       - backend:

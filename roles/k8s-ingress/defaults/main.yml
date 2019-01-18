@@ -4,6 +4,7 @@ traefik:
   acme:
     email: null
     challenge: dns
+    domain: null
   ui:
     username: null
     password: null

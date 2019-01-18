@@ -1,12 +1,17 @@
 ---
 
+- set_fact:
+    cloudflare:
+      email_base64: "{{ cloudflare.email | b64encode }}"
+      token_base64: "{{ cloudflare.token | b64encode }}"
+
 - template:
     src: "{{ traefik.acme.challenge }}.yml"
     dest: cluster/
   run_once: yes
   delegate_to: localhost
 
-- command: "kubectl apply -f cluster/{{ traefik.acme.challenge }}.yml"
+- command: kubectl --kubeconfig=cluster/admin.conf apply -f cluster/{{ traefik.acme.challenge }}.yml
   run_once: yes
   delegate_to: localhost
 
@@ -16,20 +21,22 @@
   run_once: yes
   delegate_to: localhost
 
-- command: "kubectl apply -f cluster/traefik.yml"
+- command: kubectl apply -f cluster/traefik.yml
   run_once: yes
   delegate_to: localhost
 
-- command: "kubectl --namespace kube-system create secret generic traefik-auth --from-file <(htpasswd -n {{ traefik.ui.username }} {{ traefik.ui.password }})"
+- shell: kubectl --kubeconfig=cluster/admin.conf --namespace=kube-system create secret generic traefik-auth --from-file=<(htpasswd -nb {{ traefik.ui.username }} {{ traefik.ui.password }})
+  args:
+    executable: /bin/bash
   run_once: yes
   delegate_to: localhost
 
-- copy:
+- template:
     src: traefik-ui.yml
     dest: cluster/
   run_once: yes
   delegate_to: localhost
 
-- command: "kubectl apply -f cluster/traefik-ui.yml"
+- command: kubectl apply -f cluster/traefik-ui.yml
   run_once: yes
   delegate_to: localhost
