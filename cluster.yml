@@ -1,5 +1,20 @@
 ---
 
+- name: Prepare nodes
+  hosts: k8s
+  vars_files:
+    - vars/global.yml
+  roles:
+    - role: volume-docker
+      when: 'runtime == "docker" and provisioning.use_volumes'
+    - role: docker
+      when: 'runtime == "docker"'
+    - role: containerd
+      when: 'runtime == "containerd"'
+    - role: k8s-node-prepare
+    - role: k8s-cri-containerd
+      when: 'runtime == "containerd"'
+
 - name: Prepare DNS
   hosts: first_controller
   vars_files:
@@ -23,8 +38,6 @@
         value: "{{ ansible_default_ipv4.address }}"
         account_email: "{{ cloudflare.email }}"
         account_api_token: "{{ cloudflare.token }}"
-  tags:
-    - k8s-cluster-init
 
 - name: Initialize cluster
   hosts: first_controller
@@ -33,8 +46,6 @@
   roles:
     - role: k8s-cluster-init
     - role: k8s-cni-weave
-  tags:
-    - k8s-cluster-init
 
 - name: Deploy additional masters
   hosts: additional_controllers
@@ -56,16 +67,12 @@
         value: "{{ ansible_default_ipv4.address }}"
         account_email: "{{ cloudflare.email }}"
         account_api_token: "{{ cloudflare.token }}"
-  tags:
-    - k8s-controller-join
 
 - name: Configure control planes
   hosts: controller
   roles:
     - role: k8s-controller-finish
     - role: k8s-controller-all-nodeports
-  tags:
-    - k8s-controller-all-nodeports
 
 - name: Deploy workers
   hosts: worker
@@ -75,5 +82,3 @@
     controller: "{{ groups['first_controller'][0] }}"
   roles:
     - role: k8s-worker-join
-  tags:
-    - k8s-worker-join
