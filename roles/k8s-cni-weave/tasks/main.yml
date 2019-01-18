@@ -1,5 +1,13 @@
 ---
 
+- name: Check if Weave Net is already deployed
+  shell: kubectl --kubeconfig /etc/kubernetes/admin.conf --namespace kube-system get daemonset weave-net | grep weave-net
+  args:
+    executable: /bin/bash
+  ignore_errors: yes
+  register: weave_exists
+
 - name: Initialize networking
   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://cloud.weave.works/k8s/v1.10/net.yaml"
   become: yes
+  when: 'weave_exists.failed'
