@@ -6,4 +6,4 @@
 
 - import_playbook: provision.yml
 
-- import_playbook: cluster.yml
+- import_playbook: k8s.yml
