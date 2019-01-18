@@ -2,6 +2,7 @@
 
 hcloud:
   cli_version: 1.11.0
+  ansible_version: 0.3.2
   token: "{{ vault_hcloud_token }}"
   image: ubuntu-18.04
   controller_server_type: cx21

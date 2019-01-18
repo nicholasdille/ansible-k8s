@@ -5,6 +5,8 @@
   gather_facts: no
   vars_files:
     - vars/global.yml
+    - vars/hcloud/vars.yml
+    - vars/hcloud/vault.yml
   tasks:
 
     - name: Check Ansible version
@@ -31,3 +33,14 @@
         dest: "{{ hcloud.cli_path }}"
         remote_src: yes
       delegate_to: localhost
+
+    - name: Ensure library directory is present
+      file:
+        path: library
+        state: directory
+
+    - name: Install modules for Hetzner Cloud
+      unarchive:
+        src: "https://github.com/thetechnick/hcloud-ansible/releases/download/v{{ hcloud.ansible_version }}/hcloud-ansible_v{{ hcloud.ansible_version }}_linux_amd64.zip"
+        dest: library
+        remote_src: yes

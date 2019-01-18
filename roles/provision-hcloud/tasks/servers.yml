@@ -1,6 +1,7 @@
 ---
 
-- hcloud_server:
+- name: Deploy VM
+  hcloud_server:
     name: "{{ inventory_hostname }}"
     image: "{{ hcloud.image }}"
     server_type: "{{ hcloud[role].server_type }}"
@@ -10,13 +11,15 @@
   register: node
   delegate_to: localhost
 
-- set_fact:
+- name: Store connection information
+  set_fact:
     ansible_host: "{{ item.public_ipv4 }}"
     hcloud_server_id: "{{ item.id }}"
   with_items: "{{ node.servers }}"
   delegate_to: localhost
 
-- wait_for:
+- name: Wait for SSH to be available
+  wait_for:
     host: "{{ ansible_host }}"
     port: 22
     connect_timeout: 5

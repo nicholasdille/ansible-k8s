@@ -17,7 +17,7 @@ provisioning:
   use_volumes: true
 
 # valid values: docker, containerd
-runtime: docker
+runtime: containerd
 
 dns:
   zone: dille.io
