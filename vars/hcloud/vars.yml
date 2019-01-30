@@ -5,8 +5,10 @@ hcloud:
   ansible_version: 0.3.2
   token: "{{ vault_hcloud_token }}"
   image: ubuntu-18.04
-  controller_server_type: cx21
-  worker_server_type: cx31
+  controller:
+    server_type: cx21
+  worker:
+    server_type: cx31
   location: nbg1
   ssh_keys:
     - 209622

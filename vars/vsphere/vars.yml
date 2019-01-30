@@ -8,8 +8,10 @@ vsphere:
   cluster: SWD Infrastructure
   folder: Infrastructure/Infra/RD/Infra/Kubernetes
   resource_pool: RD_Infra
-  controller_template: template_xenial_k8s_controller
-  worker_template: template_xenial_k8s_worker
+  controller:
+    template: template_xenial_k8s_controller
+  worker:
+    template: template_xenial_k8s_worker
   network: LAN Build
   domain: "{{ vault_vsphere_domain }}"
   instance_user: rdadm

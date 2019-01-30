@@ -7,6 +7,8 @@
     - vars/global.yml
     - vars/hcloud/vault.yml
     - vars/hcloud/vars.yml
+    - vars/vsphere/vault.yml
+    - vars/vsphere/vars.yml
   roles:
 
     - role: provision-hcloud
