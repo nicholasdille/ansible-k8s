@@ -30,7 +30,7 @@
   raw: "while lsof /var/lib/apt/lists/lock || lsof /var/lib/dpkg/lock-frontend; do sleep 5; done"
 
 - name: Install updates
-  raw: "apt-get update && apt-get -y upgrade"
+  raw: "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade"
   register: apt
 
 - name: Collect post-mortem data
