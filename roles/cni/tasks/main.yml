@@ -27,7 +27,15 @@
   command: "false"
   when: 'cni.bridge_network is undefined'
 
-  # See https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge
+- name: Install CNI plugin configuration (loopback)
+  template:
+    src: loopback.conf
+    dest: /etc/cni/net.d
+    owner: root
+    group: root
+  become: yes
+  when: cni.config is defined and 'loopback' in cni.config
+
 - name: Install CNI plugin configuration (bridge)
   template:
     src: bridge.conf
@@ -37,7 +45,6 @@
   become: yes
   when: cni.config is defined and 'bridge' in cni.config
 
-  # See https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge
 - name: Install CNI plugin configuration (host-device)
   template:
     src: host-device.conf
