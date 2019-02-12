@@ -2,6 +2,8 @@
 
 ... using `kubeadm` and Ansible according to [stacked control planes with `kubeadm`](https://kubernetes.io/docs/setup/independent/high-availability/#stacked-control-plane-and-etcd-nodes)
 
+**Warning: The current implementation produces a issue which breaks networking fir Docker-in-Docker.**
+
 See [documentation](docs)
 
 ## Tested components
