@@ -3,3 +3,41 @@
 - import_playbook: inventory.yml
 
 - import_playbook: provision.yml
+
+- name: Preparation for kubespray
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Copy tmeplate for hosts.ini
+      copy:
+        src: hosts.ini.template
+        dest: hosts.ini
+
+    - name: Add to section all
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[all\]$'
+        line: "{{ item }} ansible_host={{ hostvars[item]['node']['instance']['ipv4'] }} ip={{ hostvars[item]['node']['instance']['ipv4'] }}"
+      with_items: "{{ groups['controller'] }}"
+
+    - name: Add to section kube-master
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[kube-master\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['controller'] }}"
+
+    - name: Add to section etcd
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[etcd\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['controller'] }}"
+
+    - name: Add to section kube-node
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[kube-node\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['worker'] }}"

@@ -1,0 +1,13 @@
+[all]
+
+[kube-master]
+
+[etcd]
+
+[kube-node]
+
+[k8s-cluster:children]
+kube-master
+kube-node
+
+[calico-rr]
