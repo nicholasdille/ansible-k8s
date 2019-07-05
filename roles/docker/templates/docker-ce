@@ -1,3 +1,0 @@
-Package: docker-ce
-Pin: version {{ docker.version }}
-Pin-Priority: 1000

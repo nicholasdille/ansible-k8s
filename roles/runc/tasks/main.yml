@@ -1,8 +1,0 @@
----
-
-- name: Install runc
-  get_url:
-    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc.version }}/runc.amd64"
-    dest: "/usr/local/bin/runc"
-    mode: 0755
-  become: yes

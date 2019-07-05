@@ -1,5 +1,0 @@
----
-
-cloudflare:
-  email: "{{ vault_cloudflare_email }}"
-  token: "{{ vault_cloudflare_token }}"

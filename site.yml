@@ -1,9 +1,5 @@
 ---
 
-- import_playbook: prepare.yml
-
 - import_playbook: inventory.yml
 
 - import_playbook: provision.yml
-
-- import_playbook: k8s.yml
