@@ -19,7 +19,7 @@
         path: hosts.ini
         insertafter: '^\[all\]$'
         line: "{{ item }} ansible_host={{ hostvars[item]['node']['instance']['ipv4'] }} ip={{ hostvars[item]['node']['instance']['ipv4'] }}"
-      with_items: "{{ groups['controller'] }}"
+      with_items: "{{ groups['k8s'] }}"
 
     - name: Add to section kube-master
       lineinfile:
