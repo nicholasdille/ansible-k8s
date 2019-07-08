@@ -28,13 +28,6 @@
         line: "{{ item }}"
       with_items: "{{ groups['controller'] }}"
 
-    - name: Add to section etcd
-      lineinfile:
-        path: hosts.ini
-        insertafter: '^\[etcd\]$'
-        line: "{{ item }}"
-      with_items: "{{ groups['controller'] }}"
-
     - name: Add to section kube-node
       lineinfile:
         path: hosts.ini

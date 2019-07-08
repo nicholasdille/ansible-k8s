@@ -2,7 +2,8 @@
 
 [kube-master]
 
-[etcd]
+[etcd:children]
+kube-master
 
 [kube-node]
 
