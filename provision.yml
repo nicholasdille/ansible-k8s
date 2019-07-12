@@ -5,9 +5,8 @@
   gather_facts: no
   serial: 3
   vars_files:
+    - vars/auth.yml
     - vars/global.yml
-    - vars/vsphere/vault.yml
-    - vars/vsphere/vars.yml
   roles:
 
     - role: provision-vsphere
