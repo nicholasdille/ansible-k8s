@@ -6,6 +6,7 @@ vsphere:
   password: "{{ vault_vsphere_password }}"
   datacenter: SWD
   cluster: SWD Infrastructure
+  datastore: nfs_nappaff_swd_build_03
   folder: Infrastructure/Infra/RD/Infra/Kubernetes
   resource_pool: RD_Infra
   network: LAN Build
