@@ -1,36 +1,17 @@
 ---
 
 hcloud:
-  cli_version: 1.11.0
+  cli_version: 1.13.0
   cli_path: ~/.local/bin/
 
 provisioning:
   provider: hcloud
   controller:
     prefix: vl-k8sbld-c-
-    count: 3
+    count: 1
   worker:
     prefix: vl-k8sbld-w-
-    count: 2
+    count: 1
   ssh_user: root
   ssh_private_key: "~/id_rsa_hetzner"
   use_volumes: true
-
-# valid values: docker, containerd
-runtime: containerd
-
-dns:
-  zone: dille.io
-  record: k8s
-
-docker:
-  version: 18.06.*
-  volume_fs: zfs
-
-cni:
-  bridge_network: 10.10.0.0/16
-
-k8s:
-  version: v1.13.1
-  load_balancer: "{{ dns.record }}.{{ dns.zone }}"
-  pod_network: 192.168.0.0/16

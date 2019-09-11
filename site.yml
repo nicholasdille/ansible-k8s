@@ -6,4 +6,6 @@
 
 - import_playbook: provision.yml
 
-- import_playbook: k8s.yml
+- import_playbook: custom.yml
+
+- import_playbook: kubespray.yml

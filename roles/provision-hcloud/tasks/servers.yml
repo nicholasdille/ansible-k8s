@@ -7,15 +7,14 @@
     server_type: "{{ hcloud[role].server_type }}"
     location: "{{ hcloud.location }}"
     ssh_keys: "{{ hcloud.ssh_keys }}"
-    token: "{{ hcloud.token }}"
+    api_token: "{{ hcloud.token }}"
   register: node
   delegate_to: localhost
 
 - name: Store connection information
   set_fact:
-    ansible_host: "{{ item.public_ipv4 }}"
-    hcloud_server_id: "{{ item.id }}"
-  with_items: "{{ node.servers }}"
+    ansible_host: "{{ node.hcloud_server.ipv4_address }}"
+    hcloud_server_id: "{{ node.hcloud_server.id }}"
   delegate_to: localhost
 
 - name: Wait for SSH to be available

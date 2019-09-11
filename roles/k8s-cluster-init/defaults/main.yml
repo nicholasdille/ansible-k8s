@@ -1,8 +1,0 @@
----
-
-cri:
-  ctl_version: 1.11.1
-
-k8s:
-  pod_network: null
-  load_balancer: null

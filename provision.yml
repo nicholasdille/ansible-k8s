@@ -7,16 +7,14 @@
     - vars/global.yml
     - vars/hcloud/vault.yml
     - vars/hcloud/vars.yml
-    - vars/vsphere/vault.yml
-    - vars/vsphere/vars.yml
   roles:
 
     - role: provision-hcloud
       hcloud:
         use_volumes: "{{ provisioning.use_volumes }}"
-      when: 'provisioning.provider == "hcloud"'
-
-    - role: provision-vsphere
-      when: 'provisioning.provider == "vsphere"'
 
     - role: provision-ssh-config
+
+    - role: volume-docker
+      docker:
+        volume_fs: zfs

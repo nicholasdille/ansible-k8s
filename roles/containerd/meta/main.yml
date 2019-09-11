@@ -1,8 +1,0 @@
----
-
-dependencies:
-  - role: runc
-  - role: cni
-    cni:
-      components: [plugins]
-      config: [bridge]

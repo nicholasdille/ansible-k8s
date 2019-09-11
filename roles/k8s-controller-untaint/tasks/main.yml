@@ -1,5 +1,0 @@
----
-
-- name: Make master schedulable
-  command: "kubectl --kubeconfig=/etc/kubernetes/admin.conf taint nodes {{ ansible_hostname }} node-role.kubernetes.io/master:NoSchedule-"
-  become: yes

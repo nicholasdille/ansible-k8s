@@ -1,0 +1,10 @@
+---
+
+- name: XXX
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: YYY
+    debug:
+      msg: "ZZZ"

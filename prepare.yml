@@ -11,36 +11,25 @@
 
     - name: Check Ansible version
       assert:
-        that: 'ansible_version.full is version_compare("2.7.4", ">=")'
-        msg: 'Broken set_fact (https://www.jeffgeerling.com/blog/2017/adding-strings-array-ansible)'
+        that: 'ansible_version.full is version_compare("2.8.4", ">=")'
+        msg: 'Modules for Hetzner Cloud are only included in >=2.8'
 
-    - name: Install prerequisites for vSphere
-      pip:
-        name:
-          - PyVmomi
-      become: yes
-
-    - name: Download and deflate prerequisites
+    - name: Download CLI for Hetzner Cloud
       unarchive:
         src: "https://github.com/hetznercloud/cli/releases/download/v{{ hcloud.cli_version }}/hcloud-linux-amd64-v{{ hcloud.cli_version }}.tar.gz"
         dest: "/tmp/"
         remote_src: yes
       delegate_to: localhost
-    
-    - name: Install prerequisites
+
+    - name: Install CLI for Hetzner Cloud
       file:
         src: "/tmp/hcloud-linux-amd64-v{{ hcloud.cli_version }}/bin/hcloud"
         dest: "{{ hcloud.cli_path }}"
         remote_src: yes
       delegate_to: localhost
 
-    - name: Ensure library directory is present
-      file:
-        path: library
-        state: directory
-
-    - name: Install modules for Hetzner Cloud
-      unarchive:
-        src: "https://github.com/thetechnick/hcloud-ansible/releases/download/v{{ hcloud.ansible_version }}/hcloud-ansible_v{{ hcloud.ansible_version }}_linux_amd64.zip"
-        dest: library
-        remote_src: yes
+    - name: Install python library for Hetzner Cloud
+      pip:
+        name:
+          - hcloud
+      become: yes

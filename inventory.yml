@@ -28,19 +28,6 @@
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ controller_list }}"
 
-    - name: Create group for first controller
-      add_host:
-        name: "{{ controller_list | sort | first }}"
-        groups:
-          - first_controller
-
-    - name: Create group for additional controller
-      add_host:
-        name: "{{ item }}"
-        groups:
-          - additional_controllers
-      with_items: "{{ controller_list | difference(groups['first_controller']) }}"
-
     - name: Create group for worker
       add_host:
         name: "{{ item }}"

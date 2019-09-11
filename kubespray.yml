@@ -1,0 +1,32 @@
+---
+
+- name: Preparation for kubespray
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Copy tmeplate for hosts.ini
+      copy:
+        src: hosts.ini.template
+        dest: hosts.ini
+
+    - name: Add to section all
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[all\]$'
+        line: "{{ item }} ansible_host={{ hostvars[item]['node']['hcloud_server']['ipv4_address'] }} ip={{ hostvars[item]['node']['hcloud_server']['ipv4_address'] }}"
+      with_items: "{{ groups['k8s'] }}"
+
+    - name: Add to section kube-master
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[kube-master\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['controller'] }}"
+
+    - name: Add to section kube-node
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[kube-node\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['worker'] }}"

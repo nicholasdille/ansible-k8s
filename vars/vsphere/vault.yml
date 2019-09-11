@@ -1,7 +1,0 @@
----
-
-# You must create an encrypted vault using ansible-vault with the following variables and values matching your environment:
-# vault_vsphere_hostname: <hostname>
-# vault_vsphere_username: <username>
-# vault_vsphere_password: <password>
-# vault_vsphere_domain: <dns_domain>

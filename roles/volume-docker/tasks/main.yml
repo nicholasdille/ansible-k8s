@@ -20,8 +20,5 @@
   ignore_errors: yes
   register: device_exists
 
-- include: btrfs.yml
-  when: 'volume_exists.failed and device_exists.stdout_lines | length == 1 and docker.volume_fs == "btrfs"'
-
 - include: zfs.yml
   when: 'volume_exists.failed and device_exists.stdout_lines | length == 1 and docker.volume_fs == "zfs"'

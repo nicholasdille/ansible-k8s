@@ -1,4 +1,0 @@
----
-
-dependencies:
-  - role: k8s-cri-containerd
