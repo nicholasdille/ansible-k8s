@@ -16,6 +16,7 @@ vsphere:
     template: template_xenial_k8s_controller
   worker:
     template: template_xenial_k8s_worker
+    disk_size_gb: 500
 
   instance_user: rdadm
   instance_ssh_private_key: ~/id_rsa_rdadm

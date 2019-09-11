@@ -37,6 +37,24 @@
   delegate_to: localhost
   register: node
 
+- name: Add volume
+  vmware_guest_disk:
+    hostname: "{{ vsphere.hostname }}"
+    username: "{{ vsphere.username }}"
+    password: "{{ vsphere.password }}"
+    validate_certs: no
+    datacenter: "{{ vsphere.datacenter }}"
+    name: "{{ hostname }}"
+    disk:
+      - size_gb: "{{ vsphere[role].disk_size_gb }}"
+        type: thick
+        datastore: "{{ vsphere.datastore }}"
+        state: present
+        scsi_controller: 0
+        unit_number: 1
+  delegate_to: localhost
+  when: 'role == "worker"'
+
 - name: Storing connection data
   set_fact:
     ansible_host: "{{ node.instance.hw_eth0.ipaddresses.0 }}"
