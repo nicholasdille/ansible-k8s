@@ -15,11 +15,12 @@
   register: device
 
 - name: Making sure the device is not in use
-  shell: lsblk --fs --json | jq --raw-output '.blockdevices | .[] | .fstype'
+  shell: lsblk --fs --json /dev/{{ device.stdout_lines.0 }} | jq --raw-output '.blockdevices | .[] | .fstype'
   args:
     executable: /bin/bash
   become: yes
   register: fs
+  when: 'not device.failed'
 
 - name: Create ZFS pool
   command: zpool create data /dev/{{ device.stdout_lines.0 }}
