@@ -1,13 +1,38 @@
 ---
 
+vsphere:
+  hostname: "{{ vault_vsphere_hostname }}"
+  username: "{{ vault_vsphere_username }}"
+  password: "{{ vault_vsphere_password }}"
+  datacenter: SWD
+  cluster: SWD Infrastructure
+  datastore: nfs_nappaff_swd_build_02
+  folder: Infrastructure/Infra/RD/Infra/Kubernetes
+  resource_pool: RD_Infra
+  network: VLAN_335_RD-Container-Hosts
+  domain: "{{ vault_vsphere_domain }}"
+
 provisioning:
-  provider: vsphere
   controller:
     prefix: controller-
-    count: 3
+    count: 1
+    cpus: 2
+    memory_mb: 4096
+    template: template_bionic
   worker:
     prefix: worker-
-    count: 2
-  ssh_user: root
-  ssh_private_key: "~/id_rsa_user"
-  use_volumes: true
+    count: 1
+    cpus: 8
+    memory_mb: 32768
+    template: template_bionic
+    disk_size_gb: 500
+  dmz:
+    prefix: dmz-
+    count: 1
+    cpus: 2
+    memory_mb: 4096
+    template: template_bionic
+    disk_size_gb: 20
+
+  ssh_user: rdadm
+  ssh_private_key: ~/id_rsa_rdadm

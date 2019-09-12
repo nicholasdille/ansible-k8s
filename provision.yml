@@ -10,6 +10,5 @@
   roles:
 
     - role: provision-vsphere
-      when: 'provisioning.provider == "vsphere"'
 
     - role: provision-ssh-config

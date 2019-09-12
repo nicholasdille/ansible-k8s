@@ -13,11 +13,18 @@
     resource_pool: "{{ vsphere.resource_pool }}"
     name: "{{ inventory_hostname }}"
     state: poweredon
-    template: "{{ vsphere[role].template }}"
+    template: "{{ provisioning[role].template }}"
     guest_id: ubuntu64Guest
     networks:
       - name: "{{ vsphere.network }}"
         start_connected: true
+    hardware:
+      num_cpus: "{{ provisioning[role].cpus }}"
+      num_cpu_cores_per_socket: "{{ provisioning[role].cpus }}"
+      memory_mb: "{{ provisioning[role].memory_mb }}"
+      hotadd_cpu: true
+      hotremove_cpu: true
+      hotadd_memory: true
     wait_for_ip_address: true
     customization:
       domain: "{{ vsphere.domain }}"
@@ -46,14 +53,14 @@
     datacenter: "{{ vsphere.datacenter }}"
     name: "{{ hostname }}"
     disk:
-      - size_gb: "{{ vsphere[role].disk_size_gb }}"
+      - size_gb: "{{ provisioning[role].disk_size_gb }}"
         type: thick
         datastore: "{{ vsphere.datastore }}"
         state: present
         scsi_controller: 0
         unit_number: 1
   delegate_to: localhost
-  when: 'role == "worker"'
+  when: 'provisioning[role].disk_size_gb is defined'
 
 - name: Storing connection data
   set_fact:
@@ -73,5 +80,5 @@
   become: yes
 
 - name: Install Python
-  raw: "apt-get -y install python-pip"
+  raw: "apt-get -y install --no-install-recommends python-pip"
   become: yes

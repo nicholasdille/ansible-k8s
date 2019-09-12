@@ -1,1 +1,8 @@
 ---
+
+- name: Dummy
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - debug:
+        msg: "dummy"
