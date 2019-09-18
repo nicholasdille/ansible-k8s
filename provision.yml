@@ -5,10 +5,13 @@
   gather_facts: no
   serial: 3
   vars_files:
-    - vars/auth.yml
+    - ~/ansible_haufe_vsphere.yml
     - vars/global.yml
+  any_errors_fatal: true
   roles:
 
     - role: provision-vsphere
 
     - role: provision-ssh-config
+
+    - role: docker-volume

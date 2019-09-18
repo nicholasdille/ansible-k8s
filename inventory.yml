@@ -1,6 +1,6 @@
 ---
 
-- name: Inventory
+- name: Create inventory
   hosts: localhost
   gather_facts: no
   vars_files:
@@ -55,3 +55,20 @@
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ dmz_list }}"
+
+- name: Display inventory
+  hosts: k8s
+  gather_facts: no
+  vars_files:
+    - vars/global.yml
+  tasks:
+
+    - name: Host list
+      debug:
+        msg: "{% set output = [] %}\
+            {% for play_host in ansible_play_hosts %}\
+              {{ output.append(hostvars[play_host].inventory_hostname) }}\
+            {% endfor %}\
+          {{ output }}"
+      delegate_to: localhost
+      run_once: yes
