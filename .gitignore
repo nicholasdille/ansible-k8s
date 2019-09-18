@@ -3,3 +3,4 @@ host_vars/**
 ssh_known_hosts
 vars/**/vault.yml
 hosts.ini
+test.yml

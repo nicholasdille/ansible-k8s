@@ -7,9 +7,11 @@
   vars_files:
     - vars/auth.yml
     - vars/global.yml
+  any_errors_fatal: true
   roles:
 
     - role: provision-vsphere
-      when: 'provisioning.provider == "vsphere"'
 
     - role: provision-ssh-config
+
+    - role: docker-volume

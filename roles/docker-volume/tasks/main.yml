@@ -1,0 +1,37 @@
+---
+
+- name: Install prerequisites
+  apt:
+    name:
+      - jq
+  become: yes
+
+- name: Check if /var/lib/docker is located on separate volume
+  shell: mount | grep " /var/lib/docker "
+  args:
+    executable: /bin/bash
+    warn: false
+  ignore_errors: yes
+  register: volume_exists
+
+- name: Check for available block device
+  shell: lsblk --json | jq --raw-output '.blockdevices | .[] | select(.type == "disk") | select(.rm == "0") | select(.children == null) | .name'
+  args:
+    executable: /bin/bash
+  ignore_errors: yes
+  register: device
+
+- debug:
+    var: device
+
+- name: Assert that exactly one device is found
+  shell: "false"
+  when: 'device.stdout_lines | length > 1'
+
+- name: Found available block device
+  debug:
+    msg: "{{ device.stdout_lines }}"
+  when: 'device.stdout_lines | length == 1'
+
+- include: zfs.yml
+  when: 'volume_exists.failed and not device.failed and device.stdout_lines | length == 1 and docker.volume_fs == "zfs"'

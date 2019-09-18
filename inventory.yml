@@ -1,6 +1,6 @@
 ---
 
-- name: Inventory
+- name: Create inventory
   hosts: localhost
   gather_facts: no
   vars_files:
@@ -16,6 +16,11 @@
       set_fact:
         worker_list: "{{ worker_list | default([]) }} + [ '{{ provisioning.worker.prefix }}{{ \"%02x\" | format(item) }}' ]"
       loop: "{{ range(1, provisioning.worker.count + 1, 1) | list }}"
+
+    - name: Creating list of DMZ hosts
+      set_fact:
+        dmz_list: "{{ dmz_list | default([]) }} + [ '{{ provisioning.dmz.prefix }}{{ \"%02x\" | format(item) }}' ]"
+      loop: "{{ range(1, provisioning.dmz.count + 1, 1) | list }}"
 
     - name: Create group for controller
       add_host:
@@ -38,3 +43,32 @@
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
       with_items: "{{ worker_list }}"
+
+    - name: Create group for DMZ hosts
+      add_host:
+        name: "{{ item }}"
+        groups:
+          - k8s
+          - worker
+          - dmz
+        role: dmz
+        ansible_user: "{{ provisioning.ssh_user }}"
+        ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
+      with_items: "{{ dmz_list }}"
+
+- name: Display inventory
+  hosts: k8s
+  gather_facts: no
+  vars_files:
+    - vars/global.yml
+  tasks:
+
+    - name: Host list
+      debug:
+        msg: "{% set output = [] %}\
+            {% for play_host in ansible_play_hosts %}\
+              {{ output.append(hostvars[play_host].inventory_hostname) }}\
+            {% endfor %}\
+          {{ output }}"
+      delegate_to: localhost
+      run_once: yes

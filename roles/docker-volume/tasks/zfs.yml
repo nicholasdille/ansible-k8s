@@ -1,0 +1,27 @@
+---
+
+- name: Install ZFS utils
+  apt:
+    name:
+      - zfsutils-linux
+    update_cache: yes
+  become: yes
+
+- name: Making sure the device is not in use
+  shell: lsblk --fs --json /dev/{{ device.stdout_lines.0 }} | jq --raw-output '.blockdevices | .[] | .fstype'
+  args:
+    executable: /bin/bash
+  become: yes
+  register: fs
+
+- name: Assert that no filesystem is found
+  shell: "false"
+  when: 'fs.stdout_lines | length > 1 and fs.stdout_lines.0 != "null"'
+
+- name: Create ZFS pool
+  command: zpool create data /dev/{{ device.stdout_lines.0 }}
+  become: yes
+
+- name: Create ZFS for Docker
+  command: zfs create -o mountpoint=/var/lib/docker data/docker
+  become: yes

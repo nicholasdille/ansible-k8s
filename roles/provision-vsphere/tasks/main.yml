@@ -13,11 +13,19 @@
     resource_pool: "{{ vsphere.resource_pool }}"
     name: "{{ inventory_hostname }}"
     state: poweredon
-    template: "{{ vsphere[role].template }}"
+    template: "{{ provisioning[role].template }}"
     guest_id: ubuntu64Guest
     networks:
       - name: "{{ vsphere.network }}"
+        type: dhcp
         start_connected: true
+    hardware:
+      num_cpus: "{{ provisioning[role].cpus }}"
+      num_cpu_cores_per_socket: "{{ provisioning[role].cpus }}"
+      memory_mb: "{{ provisioning[role].memory_mb }}"
+      hotadd_cpu: true
+      hotremove_cpu: true
+      hotadd_memory: true
     wait_for_ip_address: true
     customization:
       domain: "{{ vsphere.domain }}"
@@ -25,7 +33,25 @@
         - "{{ vsphere.domain }}"
   delegate_to: localhost
 
-- name: Collecting data about existing VMs
+- name: Add volume
+  vmware_guest_disk:
+    hostname: "{{ vsphere.hostname }}"
+    username: "{{ vsphere.username }}"
+    password: "{{ vsphere.password }}"
+    validate_certs: no
+    datacenter: "{{ vsphere.datacenter }}"
+    name: "{{ inventory_hostname }}"
+    disk:
+      - size_gb: "{{ provisioning[role].disk_size_gb }}"
+        type: thick
+        datastore: "{{ vsphere.datastore }}"
+        state: present
+        scsi_controller: 0
+        unit_number: 1
+  delegate_to: localhost
+  when: 'provisioning[role].disk_size_gb is defined'
+
+- name: Collecting data for VM
   vmware_guest_facts:
     hostname: "{{ vsphere.hostname }}"
     username: "{{ vsphere.username }}"
@@ -37,28 +63,19 @@
   delegate_to: localhost
   register: node
 
-- name: Add volume
-  vmware_guest_disk:
-    hostname: "{{ vsphere.hostname }}"
-    username: "{{ vsphere.username }}"
-    password: "{{ vsphere.password }}"
-    validate_certs: no
-    datacenter: "{{ vsphere.datacenter }}"
-    name: "{{ hostname }}"
-    disk:
-      - size_gb: "{{ vsphere[role].disk_size_gb }}"
-        type: thick
-        datastore: "{{ vsphere.datastore }}"
-        state: present
-        scsi_controller: 0
-        unit_number: 1
-  delegate_to: localhost
-  when: 'role == "worker"'
-
 - name: Storing connection data
   set_fact:
-    ansible_host: "{{ node.instance.hw_eth0.ipaddresses.0 }}"
+    ansible_host: "{{ node.instance.ipv4 }}"
+
+- name: Host list
+  debug:
+    msg: "{% set output = [] %}\
+        {% for play_host in ansible_play_hosts %}\
+          {{ output.append( 'role=' ~ hostvars[play_host].role ~ ' hostname=' ~ hostvars[play_host].inventory_hostname ~ ' ip=' ~ hostvars[play_host].ansible_host) }}\
+        {% endfor %}\
+      {{ output }}"
   delegate_to: localhost
+  run_once: yes
 
 - name: Wait for SSH to be available
   wait_for:
@@ -68,10 +85,25 @@
     timeout: 120
   delegate_to: localhost
 
+- name: Making sure no other apt-get task is running
+  raw: "while lsof /var/lib/apt/lists/lock || lsof /var/lib/dpkg/lock-frontend; do sleep 5; done"
+
 - name: Install updates
-  raw: "apt-get update && apt-get -y upgrade"
+  raw: "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade"
   become: yes
+  ignore_errors: yes
+  no_log: true
+  register: apt
+
+- name: Show errors
+  debug:
+    msg: "{{ apt.stdout_lines | select('match', '^E: ') | list }}"
+  when: 'apt.failed'
+
+- name: Die if update failed
+  raw: "false"
+  when: 'apt.failed'
 
 - name: Install Python
-  raw: "apt-get -y install python-pip"
+  raw: "apt-get -y install --no-install-recommends python-pip python3-pip python-apt aptitude"
   become: yes
