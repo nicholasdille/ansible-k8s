@@ -5,7 +5,7 @@
   gather_facts: no
   tasks:
 
-    - name: Copy tmeplate for hosts.ini
+    - name: Copy template for hosts.ini
       copy:
         src: hosts.ini.template
         dest: hosts.ini
