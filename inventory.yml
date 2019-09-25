@@ -50,7 +50,6 @@
         name: "{{ item }}"
         groups:
           - k8s
-          - worker
           - dmz
         role: dmz
         ansible_user: "{{ provisioning.ssh_user }}"
