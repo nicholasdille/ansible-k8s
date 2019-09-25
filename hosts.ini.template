@@ -6,12 +6,15 @@
 
 [dmz]
 
-[kube-master]
+[kube-master:children]
+controller
 
 [etcd:children]
 kube-master
 
-[kube-node]
+[kube-node:children]
+worker
+dmz
 
 [k8s-cluster:children]
 kube-master
