@@ -17,6 +17,13 @@
         line: "{{ item }} ansible_host={{ hostvars[item]['node']['instance']['ipv4'] }} ip={{ hostvars[item]['node']['instance']['ipv4'] }}"
       with_items: "{{ groups['k8s'] }}"
 
+    - name: Add to section controller
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[controller\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['controller'] }}"
+
     - name: Add to section kube-master
       lineinfile:
         path: hosts.ini
@@ -30,3 +37,17 @@
         insertafter: '^\[kube-node\]$'
         line: "{{ item }}"
       with_items: "{{ groups['worker'] }}"
+
+    - name: Add to section worker
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[worker\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['worker'] }}"
+
+    - name: Add to section dmz
+      lineinfile:
+        path: hosts.ini
+        insertafter: '^\[dmz\]$'
+        line: "{{ item }}"
+      with_items: "{{ groups['dmz'] }}"
