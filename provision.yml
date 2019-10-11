@@ -4,9 +4,6 @@
   hosts: k8s
   gather_facts: no
   serial: 3
-  vars_files:
-    - vars/auth.yml
-    - vars/global.yml
   any_errors_fatal: true
   roles:
 
@@ -15,3 +12,18 @@
     - role: provision-ssh-config
 
     - role: docker-volume
+
+  tasks:
+
+    - name: Create directory for debugging
+      file:
+        path: debug
+        state: directory
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Store hostvars
+      copy:
+        dest: "debug/provision_{{ inventory_hostname }}.yml"
+        content: "{{ hostvars[inventory_hostname] | to_nice_json(indent=2) }}"
+      delegate_to: localhost

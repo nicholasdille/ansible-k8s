@@ -3,9 +3,19 @@
 - name: Create inventory
   hosts: localhost
   gather_facts: no
-  vars_files:
-    - vars/global.yml
   tasks:
+
+    - name: Assert we have enough static IPs for controllers
+      shell: "false"
+      when: "provisioning['controller'].static_ips | default([]) | length > 0 and provisioning['controller'].static_ips | default([]) | length < provisioning['controller'].count"
+
+    - name: Assert we have enough static IPs for workers
+      shell: "false"
+      when: "provisioning['worker'].static_ips | default([]) | length > 0 and provisioning['worker'].static_ips | default([]) | length < provisioning['worker'].count"
+
+    - name: Assert we have enough static IPs for DMZ hosts
+      shell: "false"
+      when: "provisioning['dmz'].static_ips | default([]) | length > 0 and provisioning['dmz'].static_ips | default([]) | length < provisioning['dmz'].count"
 
     - name: Creating list of controllers
       set_fact:
@@ -31,6 +41,9 @@
         role: controller
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
+        static_ip: "{{ provisioning['controller'].static_ips[controller_list.index(item)].vlan_ip | default('') }}"
+        node_labels: "{{ provisioning['controller'].node_labels | default([]) }}"
+        node_taints: "{{ provisioning['controller'].node_taints | default([]) }}"
       with_items: "{{ controller_list }}"
 
     - name: Create group for worker
@@ -42,6 +55,9 @@
         role: worker
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
+        static_ip: "{{ provisioning['worker'].static_ips[worker_list.index(item)].vlan_ip | default('') }}"
+        node_labels: "{{ provisioning['worker'].node_labels | default([]) }}"
+        node_taints: "{{ provisioning['worker'].node_taints | default([]) }}"
       with_items: "{{ worker_list }}"
       when: 'worker_list is defined'
 
@@ -54,6 +70,10 @@
         role: dmz
         ansible_user: "{{ provisioning.ssh_user }}"
         ansible_ssh_private_key_file: "{{ provisioning.ssh_private_key }}"
+        static_ip: "{{ provisioning['dmz'].static_ips[dmz_list.index(item)].vlan_ip }}"
+        public_ip: "{{ provisioning['dmz'].static_ips[dmz_list.index(item)].public_ip }}"
+        node_labels: "{{ provisioning['dmz'].node_labels }}"
+        node_taints: "{{ provisioning['dmz'].node_taints }}"
       with_items: "{{ dmz_list }}"
       when: 'dmz_list is defined'
 
@@ -73,3 +93,16 @@
           {{ output }}"
       delegate_to: localhost
       run_once: yes
+
+    - name: Create directory for debugging
+      file:
+        path: debug
+        state: directory
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Store hostvars
+      copy:
+        dest: "debug/inventory_{{ inventory_hostname }}.yml"
+        content: "{{ hostvars[inventory_hostname] | to_nice_json(indent=2) }}"
+      delegate_to: localhost

@@ -3,8 +3,6 @@
 - name: Sanity checks
   hosts: localhost
   gather_facts: no
-  vars_files:
-    - vars/global.yml
   tasks:
 
     - name: Check Ansible version

@@ -4,3 +4,7 @@ ssh_known_hosts
 vars/**/vault.yml
 hosts.ini
 test.yml
+debug/**
+artifacts/**
+group_vars/dmz/vcenter.yml
+group_vars/all/vcenter.yml

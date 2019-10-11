@@ -1,39 +1,86 @@
 ---
 
-- name: Preparation for kubespray
+- name: Prepare artifact directory
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create directory
+      file:
+        path: artifacts
+        state: directory
+
+- name: Create hosts.ini for kubespray
   hosts: localhost
   gather_facts: no
   tasks:
 
-    - name: Copy template for hosts.ini
-      copy:
-        src: hosts.ini.template
-        dest: hosts.ini
+  - name: Copy template for hosts.ini
+    copy:
+      src: hosts.ini.template
+      dest: artifacts/hosts.ini
 
-    - name: Add to section all
-      lineinfile:
-        path: hosts.ini
-        insertafter: '^\[all\]$'
-        line: "{{ item }} ansible_host={{ hostvars[item]['node']['instance']['ipv4'] }} ip={{ hostvars[item]['node']['instance']['ipv4'] }}"
-      with_items: "{{ groups['k8s'] }}"
+  - name: Add to section all
+    lineinfile:
+      path: artifacts/hosts.ini
+      insertafter: '^\[all\]$'
+      line: "{{ item }} ansible_host={{ hostvars[item]['node']['instance']['ipv4'] | default('EMPTY') }} ip={{ hostvars[item]['node']['instance']['ipv4'] | default('EMPTY') }}"
+    with_items: "{{ groups['k8s'] }}"
 
-    - name: Add to section controller
-      lineinfile:
-        path: hosts.ini
-        insertafter: '^\[controller\]$'
-        line: "{{ item }}"
-      with_items: "{{ groups['controller'] }}"
+  - name: Add to section controller
+    lineinfile:
+      path: artifacts/hosts.ini
+      insertafter: '^\[controller\]$'
+      line: "{{ item }}"
+    with_items: "{{ groups['controller'] }}"
 
-    - name: Add to section worker
-      lineinfile:
-        path: hosts.ini
-        insertafter: '^\[worker\]$'
-        line: "{{ item }}"
-      with_items: "{{ groups['worker'] }}"
+  - name: Add to section worker
+    lineinfile:
+      path: artifacts/hosts.ini
+      insertafter: '^\[worker\]$'
+      line: "{{ item }}"
+    with_items: "{{ groups['worker'] }}"
 
-    - name: Add to section dmz
-      lineinfile:
-        path: hosts.ini
-        insertafter: '^\[dmz\]$'
-        line: "{{ item }}"
-      with_items: "{{ groups['dmz'] }}"
+  - name: Add to section dmz
+    lineinfile:
+      path: artifacts/hosts.ini
+      insertafter: '^\[dmz\]$'
+      line: "{{ item }}"
+    with_items: "{{ groups['dmz'] }}"
+
+- name: Create host_vars for labels and taints
+  hosts: k8s
+  gather_facts: no
+  tasks:
+
+  - name: Copy template
+    copy:
+      src: hostvars.template.yml
+      dest: "artifacts/{{ inventory_hostname }}.yml"
+    delegate_to: localhost
+    when: 'public_ip is defined or node_labels is defined or node_taints is defined'
+
+  - name: Add label for public IP
+    lineinfile:
+      path: "artifacts/{{ inventory_hostname }}.yml"
+      insertafter: '^node_labels:$'
+      line: "- haufedev.systems/public-ip={{ public_ip }}"
+    delegate_to: localhost
+    when: 'public_ip is defined'
+
+  - name: Add labels
+    lineinfile:
+      path: "artifacts/{{ inventory_hostname }}.yml"
+      insertafter: '^node_labels:$'
+      line: "- {{ item.key }}={{ item.value }}"
+    with_items: "{{ node_labels }}"
+    delegate_to: localhost
+    when: 'node_labels is defined'
+
+  - name: Add taints
+    lineinfile:
+      path: "artifacts/{{ inventory_hostname }}.yml"
+      insertafter: '^node_taints:$'
+      line: "- {{ item.key }}={{ item.value }}:{{ item.taint }}"
+    with_items: "{{ node_taints }}"
+    delegate_to: localhost
+    when: 'node_taints is defined'

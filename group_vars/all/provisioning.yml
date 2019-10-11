@@ -1,0 +1,45 @@
+---
+
+provisioning:
+  controller:
+    prefix: controller-
+    count: 1
+    cpus: 2
+    memory_mb: 4096
+    template: template_bionic
+  worker:
+    prefix: worker-
+    count: 1
+    cpus: 8
+    memory_mb: 32768
+    template: template_bionic
+    disk_size_gb: 500
+  dmz:
+    prefix: vlpdoslb
+    count: 2
+    cpus: 2
+    memory_mb: 4096
+    template: template_bionic
+    disk_size_gb: 20
+    static_ips:
+    #- vlan_ip: 172.26.4.20
+    #  public_ip: 185.150.247.46
+    #- vlan_ip: 172.26.4.21
+    #  public_ip: 185.150.247.47
+    - vlan_ip: 172.26.4.30
+      public_ip: 185.150.247.78
+    - vlan_ip: 172.26.4.31
+      public_ip: 185.150.247.79
+    node_labels:
+    - key: haufedev.systems/node-type
+      value: loadbalancer
+    node_taints:
+    - key: haufedev.systems/node-type
+      value: loadbalancer
+      taint: NoSchedule
+    - key: haufedev.systems/node-type
+      value: loadbalancer
+      taint: NoExecute
+
+  ssh_user: rdadm
+  ssh_private_key: ~/id_rsa_rdadm
